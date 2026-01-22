@@ -1,0 +1,13 @@
+{
+  "name": "ai-agint2",
+  "version": "1.0.0",
+  "description": "A stunning, premium voice assistant interface with smooth animations and modern design aesthetics.",
+  "main": "about.js",
+  "scripts": {
+    "start": "npx serve",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

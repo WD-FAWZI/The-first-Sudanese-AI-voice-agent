@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mohamed Fawzi | Spotlight Effect</title>
+    <meta name="description" content="تأثير الكشاف التفاعلي - Mohamed Fawzi">
+
+    <style>
+        /* ═══════════════════════════════════════════════════════════════════
+           CSS VARIABLES & RESET
+           ═══════════════════════════════════════════════════════════════════ */
+        :root {
+            /* Spotlight Configuration */
+            --x: 50%;
+            --y: 50%;
+            --spotlight-size: 180px;
+            --spotlight-size-expanded: 420px;
+            --feather-intensity: 80px;
+
+            /* Colors */
+            --bg-dark: #0a0a0a;
+            --neon-cyan: #00fff7;
+            --neon-glow: rgba(0, 255, 247, 0.15);
+        }
+
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg-dark);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* ═══════════════════════════════════════════════════════════════════
+           MAIN CONTAINER
+           ═══════════════════════════════════════════════════════════════════ */
+        .spotlight-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background-color: var(--bg-dark);
+            cursor: none;
+            /* Hide default cursor for premium feel */
+        }
+
+        /* ═══════════════════════════════════════════════════════════════════
+           THE HIDDEN IMAGE LAYER (Revealed by Spotlight)
+           ═══════════════════════════════════════════════════════════════════ */
+        .hidden-image {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('file:///C:/Users/Royal/.gemini/antigravity/brain/4d7b5185-0c92-466d-a223-11094d35553f/uploaded_image_1769108820181.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+
+            /* ✨ The Magic: CSS Mask with Radial Gradient ✨ */
+            -webkit-mask-image: radial-gradient(circle var(--spotlight-size) at var(--x) var(--y),
+                    rgba(0, 0, 0, 1) 0%,
+                    rgba(0, 0, 0, 0.9) 40%,
+                    rgba(0, 0, 0, 0.5) 70%,
+                    rgba(0, 0, 0, 0) 100%);
+            mask-image: radial-gradient(circle var(--spotlight-size) at var(--x) var(--y),
+                    rgba(0, 0, 0, 1) 0%,
+                    rgba(0, 0, 0, 0.9) 40%,
+                    rgba(0, 0, 0, 0.5) 70%,
+                    rgba(0, 0, 0, 0) 100%);
+
+            /* Smooth size transition (60fps) */
+            transition:
+                -webkit-mask-image 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                mask-image 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+            /* Performance Optimization */
+            will-change: mask-image, -webkit-mask-image;
+            transform: translateZ(0);
+        }
+
+        /* Expanded Spotlight State */
+        .hidden-image.expanded {
+            -webkit-mask-image: radial-gradient(circle var(--spotlight-size-expanded) at var(--x) var(--y),
+                    rgba(0, 0, 0, 1) 0%,
+                    rgba(0, 0, 0, 0.95) 35%,
+                    rgba(0, 0, 0, 0.7) 60%,
+                    rgba(0, 0, 0, 0.3) 85%,
+                    rgba(0, 0, 0, 0) 100%);
+            mask-image: radial-gradient(circle var(--spotlight-size-expanded) at var(--x) var(--y),
+                    rgba(0, 0, 0, 1) 0%,
+                    rgba(0, 0, 0, 0.95) 35%,
+                    rgba(0, 0, 0, 0.7) 60%,
+                    rgba(0, 0, 0, 0.3) 85%,
+                    rgba(0, 0, 0, 0) 100%);
+        }
+
+        /* ═══════════════════════════════════════════════════════════════════
+           CUSTOM CURSOR (Premium Flashlight Style)
+           ═══════════════════════════════════════════════════════════════════ */
+        .custom-cursor {
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--neon-cyan);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            box-shadow:
+                0 0 15px var(--neon-cyan),
+                0 0 30px var(--neon-glow),
+                inset 0 0 10px var(--neon-glow);
+            transition:
+                width 0.3s ease,
+                height 0.3s ease,
+                border-color 0.3s ease;
+            animation: pulse-glow 2s infinite ease-in-out;
+        }
+
+        .custom-cursor.expanded {
+            width: 36px;
+            height: 36px;
+            border-color: #fff;
+            box-shadow:
+                0 0 25px #fff,
+                0 0 50px var(--neon-cyan),
+                inset 0 0 15px var(--neon-glow);
+        }
+
+        @keyframes pulse-glow {
+
+            0%,
+            100% {
+                box-shadow:
+                    0 0 15px var(--neon-cyan),
+                    0 0 30px var(--neon-glow);
+            }
+
+            50% {
+                box-shadow:
+                    0 0 25px var(--neon-cyan),
+                    0 0 50px var(--neon-glow);
+            }
+        }
+
+        /* ═══════════════════════════════════════════════════════════════════
+           HINT TEXT (Fades out after interaction)
+           ═══════════════════════════════════════════════════════════════════ */
+        .hint-text {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 14px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            pointer-events: none;
+            transition: opacity 0.8s ease;
+            z-index: 100;
+        }
+
+        .hint-text.hidden {
+            opacity: 0;
+        }
+
+        /* ═══════════════════════════════════════════════════════════════════
+           AMBIENT PARTICLES (Subtle Enhancement)
+           ═══════════════════════════════════════════════════════════════════ */
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--neon-cyan);
+            border-radius: 50%;
+            opacity: 0.3;
+            pointer-events: none;
+            animation: float-particle 8s infinite ease-in-out;
+        }
+
+        @keyframes float-particle {
+
+            0%,
+            100% {
+                transform: translateY(0) scale(1);
+                opacity: 0.3;
+            }
+
+            50% {
+                transform: translateY(-30px) scale(1.5);
+                opacity: 0.6;
+            }
+        }
+
+        /* ═══════════════════════════════════════════════════════════════════
+           DEBUG: NAME REGION INDICATOR (Hidden by default)
+           ═══════════════════════════════════════════════════════════════════ */
+        .name-region-debug {
+            position: absolute;
+            border: 2px dashed rgba(255, 0, 0, 0.5);
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+            /* Set to 'block' to debug the bounding box */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="spotlight-container" id="container">
+        <!-- The Hidden Image Layer -->
+        <div class="hidden-image" id="hiddenImage"></div>
+
+        <!-- Custom Cursor -->
+        <div class="custom-cursor" id="cursor"></div>
+
+        <!-- Hint Text -->
+        <div class="hint-text" id="hint">حرّك الماوس لاستكشاف</div>
+
+        <!-- Debug: Name Region (Uncomment to visualize bounding box) -->
+        <div class="name-region-debug" id="nameRegionDebug"></div>
+    </div>
+
+    <script>
+        /**
+         * ═══════════════════════════════════════════════════════════════════
+         * SPOTLIGHT REVEAL EFFECT - Premium Interactive Experience
+         * ═══════════════════════════════════════════════════════════════════
+         * 
+         * Technique: CSS mask-image with radial-gradient
+         * Performance: Uses requestAnimationFrame for 60fps smoothness
+         * 
+         * @author Mohamed Fawzi
+         */
+
+        (function () {
+            'use strict';
+
+            // ═══════════════════════════════════════════════════════════════
+            // CONFIGURATION
+            // ═══════════════════════════════════════════════════════════════
+
+            const CONFIG = {
+                // Name region bounding box (approximate center of screen)
+                // Adjust these values based on where the name appears in YOUR image
+                nameRegion: {
+                    // Percentages of viewport
+                    xStart: 0.30,  // 30% from left
+                    xEnd: 0.70,    // 70% from left
+                    yStart: 0.35,  // 35% from top
+                    yEnd: 0.65     // 65% from top
+                },
+
+                // Animation settings
+                smoothingFactor: 0.15,  // Lower = smoother but slower response
+
+                // Debug mode (set to true to see bounding box)
+                debug: false
+            };
+
+            // ═══════════════════════════════════════════════════════════════
+            // DOM REFERENCES
+            // ═══════════════════════════════════════════════════════════════
+
+            const container = document.getElementById('container');
+            const hiddenImage = document.getElementById('hiddenImage');
+            const cursor = document.getElementById('cursor');
+            const hint = document.getElementById('hint');
+            const nameRegionDebug = document.getElementById('nameRegionDebug');
+
+            // ═══════════════════════════════════════════════════════════════
+            // STATE
+            // ═══════════════════════════════════════════════════════════════
+
+            let mouseX = window.innerWidth / 2;
+            let mouseY = window.innerHeight / 2;
+            let currentX = mouseX;
+            let currentY = mouseY;
+            let isInNameRegion = false;
+            let hasInteracted = false;
+            let animationFrameId = null;
+
+            // ═══════════════════════════════════════════════════════════════
+            // HELPER FUNCTIONS
+            // ═══════════════════════════════════════════════════════════════
+
+            /**
+             * Calculate the name region bounds in pixels
+             */
+            function getNameRegionBounds() {
+                const vw = window.innerWidth;
+                const vh = window.innerHeight;
+
+                return {
+                    left: vw * CONFIG.nameRegion.xStart,
+                    right: vw * CONFIG.nameRegion.xEnd,
+                    top: vh * CONFIG.nameRegion.yStart,
+                    bottom: vh * CONFIG.nameRegion.yEnd
+                };
+            }
+
+            /**
+             * Check if point is inside the name region
+             */
+            function isPointInNameRegion(x, y) {
+                const bounds = getNameRegionBounds();
+                return (
+                    x >= bounds.left &&
+                    x <= bounds.right &&
+                    y >= bounds.top &&
+                    y <= bounds.bottom
+                );
+            }
+
+            /**
+             * Linear interpolation for smooth movement
+             */
+            function lerp(start, end, factor) {
+                return start + (end - start) * factor;
+            }
+
+            /**
+             * Update debug region visualization
+             */
+            function updateDebugRegion() {
+                if (!CONFIG.debug) return;
+
+                const bounds = getNameRegionBounds();
+                nameRegionDebug.style.display = 'block';
+                nameRegionDebug.style.left = bounds.left + 'px';
+                nameRegionDebug.style.top = bounds.top + 'px';
+                nameRegionDebug.style.width = (bounds.right - bounds.left) + 'px';
+                nameRegionDebug.style.height = (bounds.bottom - bounds.top) + 'px';
+            }
+
+            // ═══════════════════════════════════════════════════════════════
+            // ANIMATION LOOP (60fps with requestAnimationFrame)
+            // ═══════════════════════════════════════════════════════════════
+
+            function animate() {
+                // Smooth interpolation for buttery motion
+                currentX = lerp(currentX, mouseX, CONFIG.smoothingFactor);
+                currentY = lerp(currentY, mouseY, CONFIG.smoothingFactor);
+
+                // Update CSS variables
+                document.documentElement.style.setProperty('--x', currentX + 'px');
+                document.documentElement.style.setProperty('--y', currentY + 'px');
+
+                // Update custom cursor position
+                cursor.style.left = currentX + 'px';
+                cursor.style.top = currentY + 'px';
+
+                // Check if in name region and update state
+                const inRegion = isPointInNameRegion(currentX, currentY);
+
+                if (inRegion !== isInNameRegion) {
+                    isInNameRegion = inRegion;
+
+                    if (isInNameRegion) {
+                        // Entering name region - EXPAND spotlight
+                        hiddenImage.classList.add('expanded');
+                        cursor.classList.add('expanded');
+                    } else {
+                        // Leaving name region - SHRINK spotlight
+                        hiddenImage.classList.remove('expanded');
+                        cursor.classList.remove('expanded');
+                    }
+                }
+
+                // Continue animation loop
+                animationFrameId = requestAnimationFrame(animate);
+            }
+
+            // ═══════════════════════════════════════════════════════════════
+            // EVENT HANDLERS
+            // ═══════════════════════════════════════════════════════════════
+
+            function handleMouseMove(e) {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+
+                // Hide hint after first interaction
+                if (!hasInteracted) {
+                    hasInteracted = true;
+                    hint.classList.add('hidden');
+                }
+            }
+
+            function handleMouseEnter() {
+                cursor.style.opacity = '1';
+            }
+
+            function handleMouseLeave() {
+                cursor.style.opacity = '0';
+            }
+
+            function handleResize() {
+                updateDebugRegion();
+            }
+
+            // ═══════════════════════════════════════════════════════════════
+            // PARTICLE EFFECT (Ambient Enhancement)
+            // ═══════════════════════════════════════════════════════════════
+
+            function createParticles(count = 12) {
+                for (let i = 0; i < count; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.top = Math.random() * 100 + '%';
+                    particle.style.animationDelay = Math.random() * 8 + 's';
+                    particle.style.animationDuration = (6 + Math.random() * 4) + 's';
+                    container.appendChild(particle);
+                }
+            }
+
+            // ═══════════════════════════════════════════════════════════════
+            // INITIALIZATION
+            // ═══════════════════════════════════════════════════════════════
+
+            function init() {
+                // Set initial position to center
+                document.documentElement.style.setProperty('--x', mouseX + 'px');
+                document.documentElement.style.setProperty('--y', mouseY + 'px');
+                cursor.style.left = mouseX + 'px';
+                cursor.style.top = mouseY + 'px';
+
+                // Attach event listeners
+                container.addEventListener('mousemove', handleMouseMove, { passive: true });
+                container.addEventListener('mouseenter', handleMouseEnter);
+                container.addEventListener('mouseleave', handleMouseLeave);
+                window.addEventListener('resize', handleResize);
+
+                // Create ambient particles
+                createParticles();
+
+                // Update debug region
+                updateDebugRegion();
+
+                // Start animation loop
+                animate();
+
+                console.log('✨ Spotlight Effect Initialized');
+                console.log('📍 Name Region:', CONFIG.nameRegion);
+            }
+
+            // Start when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+            // Cleanup on page unload
+            window.addEventListener('beforeunload', () => {
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                }
+            });
+
+        })();
+    </script>
+</body>
+
+</html>
