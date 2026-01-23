@@ -88,13 +88,44 @@ const VAPIService = (() => {
         }
     };
 
+    // Default low-latency configuration
+    const defaultConfig = {
+        transcriber: {
+            provider: "deepgram",
+            model: "nova-2",
+            language: "ar" // Default to Arabic for this project
+        },
+        model: {
+            provider: "openai",
+            model: "gpt-4o-mini"
+        },
+        voice: {
+            provider: "11labs",
+            model: "eleven_turbo_v2_5"
+        }
+    };
+
     // Start a voice call
     const startCall = async (assistantId, options = {}) => {
+        // Merge defaults with provided options
+        const mergedOptions = { ...options };
+
+        // Ensure sub-objects are merged, not overwritten
+        if (defaultConfig.transcriber) {
+            mergedOptions.transcriber = { ...defaultConfig.transcriber, ...(options.transcriber || {}) };
+        }
+        if (defaultConfig.model) {
+            mergedOptions.model = { ...defaultConfig.model, ...(options.model || {}) };
+        }
+        if (defaultConfig.voice) {
+            mergedOptions.voice = { ...defaultConfig.voice, ...(options.voice || {}) };
+        }
+
         return callAPI('call/start', {
             method: 'POST',
             body: {
                 assistantId,
-                ...options
+                ...mergedOptions
             }
         });
     };
