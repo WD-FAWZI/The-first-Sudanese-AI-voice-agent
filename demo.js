@@ -205,7 +205,7 @@ function DemoPage() {
                     >
                         <a href="index.html" className="nav-link">الرئيسية</a>
                         <a href="about.html" className="nav-link">حول</a>
-                        <a href="demo.html" className="nav-link active">تجربة</a>
+                        <a href="demo.html" className="nav-link active" aria-current="page">تجربة</a>
                         {/* Settings link hidden temporarily */}
                     </motion.div>
                 </div>
@@ -251,6 +251,8 @@ function DemoPage() {
                     {/* Status - Dynamic system messages */}
                     <motion.p
                         className={`status-text ${isListening ? 'active' : ''} ${hasPermission === false ? 'error' : ''}`}
+                        role="status"
+                        aria-live="polite"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.5 }}

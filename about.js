@@ -221,7 +221,7 @@ function AboutPage() {
                         transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
                     >
                         <a href="index.html" className="nav-link">الرئيسية</a>
-                        <a href="about.html" className="nav-link active">حول</a>
+                        <a href="about.html" className="nav-link active" aria-current="page">حول</a>
                         <a href="demo.html" className="nav-link">تجربة</a>
                         {/* Settings link hidden temporarily */}
                     </motion.div>
