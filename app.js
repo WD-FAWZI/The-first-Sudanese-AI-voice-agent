@@ -29,12 +29,20 @@ const HiddenDepthBackground = ({ smoothX, smoothY }) => {
     }, []);
 
     useEffect(() => {
+        let prevX = null;
+        let prevY = null;
+
         const updateMask = () => {
             if (bgRef.current) {
                 const x = smoothX.get();
                 const y = smoothY.get();
-                bgRef.current.style.setProperty('--mouse-x', `${x}px`);
-                bgRef.current.style.setProperty('--mouse-y', `${y}px`);
+
+                if (x !== prevX || y !== prevY) {
+                    bgRef.current.style.setProperty('--mouse-x', `${x}px`);
+                    bgRef.current.style.setProperty('--mouse-y', `${y}px`);
+                    prevX = x;
+                    prevY = y;
+                }
             }
             requestAnimationFrame(updateMask);
         };
