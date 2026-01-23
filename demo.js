@@ -15,17 +15,20 @@ const HiddenWavesBackground = ({ smoothX, smoothY }) => {
     }, []);
 
     useEffect(() => {
-        const updateMask = () => {
+        const updateMousePosition = () => {
             if (bgRef.current) {
-                const x = smoothX.get();
-                const y = smoothY.get();
-                bgRef.current.style.setProperty('--mouse-x', `${x}px`);
-                bgRef.current.style.setProperty('--mouse-y', `${y}px`);
+                bgRef.current.style.setProperty('--mouse-x', `${smoothX.get()}px`);
+                bgRef.current.style.setProperty('--mouse-y', `${smoothY.get()}px`);
             }
-            requestAnimationFrame(updateMask);
         };
-        const frameId = requestAnimationFrame(updateMask);
-        return () => cancelAnimationFrame(frameId);
+
+        const unsubscribeX = smoothX.onChange(updateMousePosition);
+        const unsubscribeY = smoothY.onChange(updateMousePosition);
+
+        return () => {
+            unsubscribeX();
+            unsubscribeY();
+        };
     }, [smoothX, smoothY]);
 
     return (
