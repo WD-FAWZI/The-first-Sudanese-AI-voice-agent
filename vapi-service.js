@@ -128,10 +128,16 @@ const VAPIService = (() => {
         });
     };
 
+    // Get public key
+    const getPublicKey = () => {
+        return activeKey ? activeKey.publicKey : null;
+    };
+
     return {
         init,
         isReady,
         getActiveKeyName,
+        getPublicKey,
         clearSession,
         callAPI,
         startCall,

@@ -2,6 +2,13 @@ const { motion, useMotionValue, useSpring, useTransform } = window.Motion;
 const { useState, useEffect, useRef } = React;
 
 // ═══════════════════════════════════════════════════════════════════════════
+// Constants
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Placeholder for Assistant ID - Replace with your actual Assistant ID
+const ASSISTANT_ID = "YOUR_ASSISTANT_ID";
+
+// ═══════════════════════════════════════════════════════════════════════════
 // SVG Icons - Minimal Neon Style
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -72,6 +79,7 @@ function VoiceAssistantUI() {
     const smoothY = useSpring(mouseY, springConfig);
 
     const [isActive, setIsActive] = useState(false);
+    const [vapi, setVapi] = useState(null);
 
     // Track mouse and touch movement
     useEffect(() => {
@@ -94,6 +102,62 @@ function VoiceAssistantUI() {
             window.removeEventListener("touchmove", handleMove);
         };
     }, []);
+
+    // Initialize Vapi
+    useEffect(() => {
+        const initVapi = () => {
+             const publicKey = window.VAPIService ? window.VAPIService.getPublicKey() : null;
+             if (publicKey && window.Vapi) {
+                 const vapiInstance = new window.Vapi(publicKey);
+                 setVapi(vapiInstance);
+
+                 vapiInstance.on('call-start', () => setIsActive(true));
+                 vapiInstance.on('call-end', () => setIsActive(false));
+                 vapiInstance.on('error', (e) => {
+                     console.error(e);
+                     setIsActive(false);
+                 });
+                 return true;
+             }
+             return false;
+        };
+
+        // Try immediately
+        if (!initVapi()) {
+            // Retry until ready (VAPIService or Vapi might be loading)
+            const interval = setInterval(() => {
+                if (initVapi()) {
+                    clearInterval(interval);
+                }
+            }, 500);
+            return () => clearInterval(interval);
+        }
+    }, []);
+
+    const toggleCall = () => {
+        if (!vapi) {
+            // Try to init again?
+            const publicKey = window.VAPIService?.getPublicKey();
+            if (!publicKey) {
+                alert("Please configure Vapi keys in Settings first.");
+                return;
+            }
+            // If we have key but no vapi instance, something went wrong or init didn't happen
+            alert("Voice service is initializing. Please try again in a moment.");
+            return;
+        }
+
+        if (ASSISTANT_ID === "YOUR_ASSISTANT_ID") {
+            alert("Please set a valid ASSISTANT_ID in app.js");
+            return;
+        }
+
+        if (isActive) {
+            vapi.stop();
+        } else {
+            vapi.start(ASSISTANT_ID);
+        }
+    };
 
     // Feature cards data - No emojis, clean text
     const features = [
@@ -144,7 +208,7 @@ function VoiceAssistantUI() {
                         <a href="index.html" className="nav-link active">الرئيسية</a>
                         <a href="about.html" className="nav-link">حول</a>
                         <a href="demo.html" className="nav-link">تجربة</a>
-                        {/* Settings link hidden temporarily */}
+                        <a href="settings.html" className="nav-link" style={{fontSize: '0.8em'}}>إعدادات</a>
                     </motion.div>
                 </div>
             </nav>
@@ -183,11 +247,11 @@ function VoiceAssistantUI() {
                         tabIndex="0"
                         aria-label="تنشيط المساعد الصوتي"
                         className="voice-orb"
-                        onClick={() => setIsActive(!isActive)}
+                        onClick={toggleCall}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' || e.key === ' ') {
                                 e.preventDefault();
-                                setIsActive(!isActive);
+                                toggleCall();
                             }
                         }}
                         style={{
@@ -217,7 +281,7 @@ function VoiceAssistantUI() {
                             ease: [0.16, 1, 0.3, 1]
                         }}
                     >
-                        كيف يمكنني مساعدتك اليوم؟
+                        {isActive ? "جاري الاستماع..." : "كيف يمكنني مساعدتك اليوم؟"}
                     </motion.h1>
 
                     <motion.p
