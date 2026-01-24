@@ -249,7 +249,6 @@ function VoiceAssistantUI() {
                         <a href="index.html" className="nav-link active">الرئيسية</a>
                         <a href="about.html" className="nav-link">حول</a>
                         <a href="demo.html" className="nav-link">تجربة</a>
-                        <a href="demo.html" className="nav-link">تجربة</a>
                     </motion.div>
                 </div>
             </nav>
@@ -289,6 +288,10 @@ function VoiceAssistantUI() {
                         aria-label="تنشيط المساعد الصوتي"
                         className="voice-orb"
                         onClick={toggleCall}
+                        onTouchEnd={(e) => {
+                            e.preventDefault();
+                            toggleCall();
+                        }}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' || e.key === ' ') {
                                 e.preventDefault();

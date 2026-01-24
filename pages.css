@@ -112,24 +112,7 @@
     color: var(--neon-primary);
 }
 
-/* Settings Link - Special Gear Icon Style */
-.nav-link.settings-link {
-    font-size: 1.2rem;
-    padding: 0.3rem 0.5rem;
-    border-radius: 8px;
-    transition: all 0.4s var(--ease-out-expo);
-}
 
-.nav-link.settings-link::after {
-    display: none;
-}
-
-.nav-link.settings-link:hover {
-    background: rgba(0, 245, 255, 0.1);
-    color: var(--neon-primary);
-    transform: rotate(90deg);
-    text-shadow: 0 0 15px var(--neon-subtle);
-}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    PAGE CONTAINER
@@ -642,33 +625,65 @@
     }
 }
 
+/* Settings Link Styles Removed */
+
 /* ═══════════════════════════════════════════════════════════════════════════
    MOBILE NAVBAR ADJUSTMENTS
    ═══════════════════════════════════════════════════════════════════════════ */
 
 @media (max-width: 639px) {
     .navbar {
-        padding: 0.75rem 0;
+        padding: 0.5rem 0;
+        background: rgba(0, 0, 0, 0.95);
+        /* Darker background for better contrast */
+        border-bottom: 1px solid rgba(0, 245, 255, 0.1);
     }
 
     .nav-content {
         flex-direction: column;
-        gap: 0.5rem;
-        padding: 0 1rem;
-    }
-
-    .nav-links {
         gap: 0.75rem;
-        font-size: 0.85rem;
-        flex-wrap: wrap;
-        justify-content: center;
+        padding: 0 1rem;
+        width: 100%;
     }
 
     .logo {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .nav-links {
+        display: flex;
+        justify-content: space-evenly;
+        width: 100%;
+        gap: 0;
+        /* Let space-evenly handle it */
+        padding-bottom: 0.25rem;
     }
 
     .nav-link {
-        padding: 0.2rem 0;
+        font-size: 14px;
+        /* Explicit 14px as requested */
+        padding: 0.25rem 0.5rem;
+        white-space: nowrap;
+        color: var(--text-secondary);
+    }
+
+    /* Active State with Turquoise Underline & Glow */
+    .nav-link.active {
+        color: var(--neon-primary);
+        position: relative;
+    }
+
+    .nav-link.active::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: var(--neon-primary);
+        box-shadow: 0 0 10px rgba(0, 245, 255, 0.6);
+        /* Matching Direct Call glow */
+        border-radius: 2px;
     }
 }

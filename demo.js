@@ -319,6 +319,10 @@ function DemoPage() {
                         <motion.button
                             className={`btn ${callState === 'active' ? 'btn-secondary' : 'btn-primary'}`}
                             onClick={toggleCall}
+                            onTouchEnd={(e) => {
+                                e.preventDefault();
+                                toggleCall();
+                            }}
                             whileHover={{ scale: 1.05, y: -3 }}
                             whileTap={{ scale: 0.95 }}
                             disabled={callState === 'connecting'}

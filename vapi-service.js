@@ -9,7 +9,7 @@ const VAPIService = (() => {
 
     // Initialize the service with the config file keys
     const init = async () => {
-        if (window.VAPI_CONFIG && window.VAPI_CONFIG.publicKey) {
+        if (window.VAPI_CONFIG) {
             activeKey = {
                 name: 'Production Config',
                 publicKey: window.VAPI_CONFIG.publicKey,
