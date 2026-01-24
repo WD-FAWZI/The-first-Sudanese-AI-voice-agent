@@ -90,8 +90,8 @@ function DemoPage() {
     const [transcript, setTranscript] = useState('');
     const [hasPermission, setHasPermission] = useState(null);
 
-    // Placeholder for Assistant ID - Replace with your actual Assistant ID or config
-    const ASSISTANT_ID = window.VAPI_CONFIG?.assistantId || "YOUR_ASSISTANT_ID";
+    // Assistant ID from Global Production Config
+    const ASSISTANT_ID = window.VAPI_CONFIG?.assistantId;
 
     // Track mouse and touch movement
     useEffect(() => {
@@ -172,14 +172,10 @@ function DemoPage() {
     }, []);
 
 
-    const toggleCall = () => {
+    const toggleCall = async () => {
         if (!vapi) {
-            const publicKey = window.VAPIService?.getPublicKey();
-            if (!publicKey) {
-                alert("يرجى إعداد مفاتيح API في الإعدادات أولاً.");
-                return;
-            }
-            alert("جاري تهيئة خدمة الصوت... يرجى الانتظار قليلاً.");
+            console.warn("Vapi instance not ready");
+            setStatus("خطأ في تهيئة الخدمة الصوتية");
             return;
         }
 
@@ -187,13 +183,27 @@ function DemoPage() {
             vapi.stop();
             setStatus('جاري إنهاء المكالمة...');
         } else {
-            if (ASSISTANT_ID === "YOUR_ASSISTANT_ID") {
-                alert("الرجاء تحديد معرف المساعد في ملف الإعدادات.");
+            console.log("Starting call with Assistant ID:", ASSISTANT_ID);
+
+            if (!ASSISTANT_ID) {
+                console.error("Assistant ID is missing!");
+                setStatus("خطأ في معرف المساعد");
                 return;
             }
-            setCallState('connecting');
-            setStatus('جاري الاتصال...');
-            vapi.start(ASSISTANT_ID);
+
+            try {
+                // Request microphone permission explicitly if not already granted
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                // Stop the tracks immediately as Vapi will handle its own stream
+                stream.getTracks().forEach(track => track.stop());
+
+                setCallState('connecting');
+                setStatus('جاري الاتصال...');
+                vapi.start(ASSISTANT_ID);
+            } catch (err) {
+                console.error("Microphone permission denied or error:", err);
+                setStatus("يرجى السماح بالوصول للميكروفون");
+            }
         }
     };
 
@@ -234,7 +244,6 @@ function DemoPage() {
                         <a href="index.html" className="nav-link">الرئيسية</a>
                         <a href="about.html" className="nav-link">حول</a>
                         <a href="demo.html" className="nav-link active">تجربة</a>
-                        <a href="settings.html" className="nav-link" style={{ fontSize: '0.8em' }}>إعدادات</a>
                     </motion.div>
                 </div>
             </nav>

@@ -223,7 +223,6 @@ function AboutPage() {
                         <a href="index.html" className="nav-link">الرئيسية</a>
                         <a href="about.html" className="nav-link active">حول</a>
                         <a href="demo.html" className="nav-link">تجربة</a>
-                        {/* Settings link hidden temporarily */}
                     </motion.div>
                 </div>
             </nav>

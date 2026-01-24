@@ -7,7 +7,8 @@ const { useState, useEffect, useRef } = React;
 
 // Placeholder for Assistant ID - Replace with your actual Assistant ID
 // Load Assistant ID from Config
-const ASSISTANT_ID = window.VAPI_CONFIG?.assistantId || null;
+// Load Assistant ID from Production Config
+const ASSISTANT_ID = window.VAPI_CONFIG?.assistantId;
 
 // ═══════════════════════════════════════════════════════════════════════════
 // SVG Icons - Minimal Neon Style
@@ -156,18 +157,8 @@ function VoiceAssistantUI() {
 
     const toggleCall = () => {
         if (!vapi) {
-            console.warn("Voice service not ready yet. Retrying initialization...");
-            // Attempt re-init logic could go here, or just show the error state
-            setConnectionError("جاري تهيئة الخدمة الصوتية... الرجاء الانتظار");
-            const publicKey = window.VAPIService?.getPublicKey();
-            if (publicKey && window.Vapi && !vapi) {
-                // Quick retry attempt
-                try {
-                    const vapiInstance = new window.Vapi(publicKey);
-                    setVapi(vapiInstance);
-                    vapiInstance.start(ASSISTANT_ID);
-                } catch (e) { console.error(e); }
-            }
+            console.warn("Voice service initializing...");
+            setConnectionError("جاري تهيئة الخدمة الصوتية...");
             return;
         }
 
@@ -258,7 +249,7 @@ function VoiceAssistantUI() {
                         <a href="index.html" className="nav-link active">الرئيسية</a>
                         <a href="about.html" className="nav-link">حول</a>
                         <a href="demo.html" className="nav-link">تجربة</a>
-                        <a href="settings.html" className="nav-link" style={{ fontSize: '0.8em' }}>إعدادات</a>
+                        <a href="demo.html" className="nav-link">تجربة</a>
                     </motion.div>
                 </div>
             </nav>
