@@ -1,0 +1,765 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   VOID INTELLIGENCE - AI Voice Assistant Theme
+   A single piercing light emerging from absolute darkness
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* ═══════════════════════════════════════════════════════════════════════════
+       🎛️ HIDDEN DEPTH GLOW CONTROL - التحكم في توهج الخلفية الخفية
+       ═══════════════════════════════════════════════════════════════════════════
+       
+       غير الرقم من 1 إلى 10 للتحكم في شدة التوهج:
+       - 1-3: توهج خفيف جداً (سري للغاية)
+       - 4-6: توهج متوسط (موصى به) ✅
+       - 7-10: توهج قوي (واضح جداً)
+    */
+    --depth-glow-intensity: 8;
+
+    /* ─────────────────────────────────────────────────────────────────────────
+       المتغيرات المحسوبة تلقائياً - لا تعدلها يدوياً
+       ───────────────────────────────────────────────────────────────────────── */
+    --depth-mask-opacity: calc(var(--depth-glow-intensity) * 0.08);
+    --depth-shape-opacity: calc(var(--depth-glow-intensity) * 0.03);
+    --depth-reveal-size: calc(150px + (var(--depth-glow-intensity) * 10px));
+
+    /* ─────────────────────────────────────────────────────────────────────────
+       THE VOID - Deep Black Spectrum
+       ───────────────────────────────────────────────────────────────────────── */
+    --void-pure: #000000;
+    --void-deep: #020203;
+    --void-soft: #050507;
+    --void-surface: #0a0a0c;
+
+    /* ─────────────────────────────────────────────────────────────────────────
+       THE LIGHT - Monochromatic Cyan Spectrum
+       ───────────────────────────────────────────────────────────────────────── */
+    --neon-primary: #00F5FF;
+    --neon-bright: #67FFFF;
+    --neon-dim: rgba(0, 245, 255, 0.7);
+    --neon-subtle: rgba(0, 245, 255, 0.4);
+    --neon-whisper: rgba(0, 245, 255, 0.15);
+    --neon-ghost: rgba(0, 245, 255, 0.05);
+
+    /* Glow Effects */
+    --glow-intense: 0 0 30px rgba(0, 245, 255, 0.6), 0 0 60px rgba(0, 245, 255, 0.3);
+    --glow-soft: 0 0 20px rgba(0, 245, 255, 0.3), 0 0 40px rgba(0, 245, 255, 0.15);
+    --glow-subtle: 0 0 15px rgba(0, 245, 255, 0.2);
+
+    /* ─────────────────────────────────────────────────────────────────────────
+       TEXT HIERARCHY
+       ───────────────────────────────────────────────────────────────────────── */
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.6);
+    --text-muted: rgba(255, 255, 255, 0.35);
+    --text-ghost: rgba(255, 255, 255, 0.15);
+
+    /* ─────────────────────────────────────────────────────────────────────────
+       SPACING SYSTEM
+       ───────────────────────────────────────────────────────────────────────── */
+    --space-xs: 0.5rem;
+    --space-sm: 1rem;
+    --space-md: 1.5rem;
+    --space-lg: 2rem;
+    --space-xl: 3rem;
+    --space-2xl: 5rem;
+
+    /* ─────────────────────────────────────────────────────────────────────────
+       TYPOGRAPHY
+       ───────────────────────────────────────────────────────────────────────── */
+    --font-arabic: 'IBM Plex Sans Arabic', 'Tajawal', sans-serif;
+    --font-english: 'Inter', sans-serif;
+
+    /* ─────────────────────────────────────────────────────────────────────────
+       MOTION
+       ───────────────────────────────────────────────────────────────────────── */
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-in-out-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* ─────────────────────────────────────────────────────────────────────────
+       SETTINGS PAGE VARIABLES
+       ───────────────────────────────────────────────────────────────────────── */
+    --color-bg-primary: var(--void-pure);
+    --color-text-primary: var(--text-primary);
+    --color-text-secondary: var(--text-secondary);
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --accent-blue: #1e90ff;
+    --accent-brown: #8b4513;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FOUNDATION
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+body {
+    font-family: var(--font-arabic);
+    background: var(--void-pure);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: 300;
+}
+
+#root {
+    min-height: 100vh;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   THE CONTAINER - Void Canvas
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.container {
+    background: radial-gradient(ellipse 80% 50% at 50% -20%, var(--void-surface) 0%, var(--void-pure) 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: relative;
+    padding-top: 80px;
+    /* Account for fixed navbar */
+    padding-bottom: 2rem;
+}
+
+/* Noise Texture Overlay */
+.container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    opacity: 0.03;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Subtle Grid - Barely Visible */
+.container::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(var(--neon-ghost) 1px, transparent 1px),
+        linear-gradient(90deg, var(--neon-ghost) 1px, transparent 1px);
+    background-size: 80px 80px;
+    opacity: 0.5;
+    pointer-events: none;
+    animation: gridBreath 8s ease-in-out infinite;
+}
+
+@keyframes gridBreath {
+
+    0%,
+    100% {
+        opacity: 0.3;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CURSOR GLOW - The Following Light
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.cursor-glow {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle,
+            var(--neon-whisper) 0%,
+            transparent 60%);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 2;
+    mix-blend-mode: screen;
+    will-change: transform;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HERO SECTION
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.hero {
+    text-align: center;
+    z-index: 10;
+    position: relative;
+    padding: var(--space-lg);
+    padding-top: var(--space-xl);
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 50vh;
+}
+
+.assistant-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-lg);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   THE ORB - Liquid Intelligence
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.voice-orb {
+    width: 180px;
+    height: 180px;
+    background: linear-gradient(135deg,
+            var(--neon-primary) 0%,
+            var(--neon-bright) 25%,
+            var(--neon-primary) 50%,
+            var(--neon-dim) 75%,
+            var(--neon-primary) 100%);
+    background-size: 300% 300%;
+    border-radius: 60% 40% 55% 45% / 55% 45% 50% 50%;
+    position: relative;
+    box-shadow: var(--glow-intense);
+    animation:
+        orbMorph 8s ease-in-out infinite,
+        orbGradient 6s ease-in-out infinite,
+        orbBreath 4s ease-in-out infinite;
+    cursor: pointer;
+    transition: box-shadow 0.4s var(--ease-out-expo);
+}
+
+.voice-orb:hover {
+    box-shadow:
+        0 0 50px rgba(0, 245, 255, 0.8),
+        0 0 100px rgba(0, 245, 255, 0.5),
+        0 0 150px rgba(0, 245, 255, 0.3);
+}
+
+/* Morphing Shape */
+@keyframes orbMorph {
+
+    0%,
+    100% {
+        border-radius: 60% 40% 55% 45% / 55% 45% 50% 50%;
+    }
+
+    25% {
+        border-radius: 45% 55% 50% 50% / 40% 60% 45% 55%;
+    }
+
+    50% {
+        border-radius: 55% 45% 45% 55% / 50% 50% 55% 45%;
+    }
+
+    75% {
+        border-radius: 40% 60% 55% 45% / 55% 45% 40% 60%;
+    }
+}
+
+/* Gradient Movement */
+@keyframes orbGradient {
+
+    0%,
+    100% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+/* Subtle Breathing */
+@keyframes orbBreath {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.03);
+    }
+}
+
+/* Inner Glow Ring */
+.voice-orb::before {
+    content: '';
+    position: absolute;
+    inset: -25px;
+    border-radius: 50%;
+    border: 1px solid var(--neon-subtle);
+    animation: ringPulse 3s ease-in-out infinite;
+    opacity: 0.6;
+}
+
+.voice-orb::after {
+    content: '';
+    position: absolute;
+    inset: -50px;
+    border-radius: 50%;
+    border: 1px solid var(--neon-whisper);
+    animation: ringPulse 3s ease-in-out infinite 1.5s;
+    opacity: 0.4;
+}
+
+@keyframes ringPulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.6;
+    }
+
+    50% {
+        transform: scale(1.08);
+        opacity: 0.2;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TYPOGRAPHY
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 100;
+    letter-spacing: -0.03em;
+    margin-bottom: var(--space-sm);
+    color: var(--text-primary);
+    text-shadow: 0 0 40px rgba(0, 245, 255, 0.15);
+}
+
+p {
+    color: var(--text-secondary);
+    font-size: clamp(0.95rem, 2vw, 1.15rem);
+    font-weight: 300;
+    letter-spacing: 0.01em;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FEATURE CARDS - Brutalist Glass
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.features {
+    position: relative;
+    bottom: auto;
+    left: auto;
+    transform: none;
+    display: flex;
+    gap: var(--space-md);
+    z-index: 10;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: var(--space-lg) var(--space-md);
+    width: 100%;
+    max-width: 1200px;
+}
+
+.glass-card {
+    background: var(--neon-ghost);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--neon-whisper);
+    border-radius: 12px;
+    padding: var(--space-md) var(--space-lg);
+    transition: all 0.4s var(--ease-out-expo);
+    cursor: pointer;
+    min-width: 150px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Hover Glow Edge */
+.glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--neon-primary), transparent);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.glass-card:hover::before {
+    opacity: 1;
+}
+
+.glass-card:hover {
+    background: rgba(0, 245, 255, 0.08);
+    border-color: var(--neon-subtle);
+    transform: translateY(-8px);
+    box-shadow: var(--glow-soft);
+}
+
+.glass-card h3 {
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: var(--space-xs);
+    color: var(--neon-primary);
+    transition: text-shadow 0.3s ease;
+}
+
+.glass-card:hover h3 {
+    text-shadow: 0 0 20px var(--neon-subtle);
+}
+
+.glass-card p {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE DESIGN
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+    .container {
+        padding-top: 100px;
+        /* More space for mobile navbar */
+        padding-bottom: 2rem;
+    }
+
+    .hero {
+        min-height: auto;
+        padding: var(--space-md);
+        padding-top: var(--space-lg);
+    }
+
+    .voice-orb {
+        width: 140px;
+        height: 140px;
+    }
+
+    h1 {
+        font-size: 1.6rem;
+        padding: 0 var(--space-sm);
+    }
+
+    .features {
+        flex-direction: column;
+        width: 90%;
+        padding: var(--space-md);
+        gap: var(--space-sm);
+    }
+
+    .glass-card {
+        width: 100%;
+        padding: var(--space-sm) var(--space-md);
+    }
+
+    .assistant-wrapper {
+        gap: var(--space-md);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   REDUCED MOTION SUPPORT
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LOADING STATE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: var(--void-pure);
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 2px solid var(--neon-ghost);
+    border-top-color: var(--neon-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    box-shadow: var(--glow-subtle);
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   UTILITY CLASSES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.text-glow {
+    text-shadow: 0 0 30px var(--neon-subtle);
+}
+
+.neon-border {
+    border: 1px solid var(--neon-subtle);
+    box-shadow: var(--glow-subtle);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HIDDEN DEPTH BACKGROUND - Secret Ink Effect
+   Reveals 3D perspective pattern only under cursor glow
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.hidden-depth-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+    /* Initially invisible - revealed by mask */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.hidden-depth-bg.active {
+    opacity: 1;
+}
+
+/* The reveal mask follows the cursor */
+.hidden-depth-bg .depth-content {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Mask will be applied via JS */
+    -webkit-mask-image: radial-gradient(circle var(--depth-reveal-size) at var(--mouse-x, 50%) var(--mouse-y, 50%),
+            rgba(0, 0, 0, var(--depth-mask-opacity)) 0%,
+            rgba(0, 0, 0, calc(var(--depth-mask-opacity) * 0.5)) 40%,
+            transparent 70%);
+    mask-image: radial-gradient(circle var(--depth-reveal-size) at var(--mouse-x, 50%) var(--mouse-y, 50%),
+            rgba(0, 0, 0, var(--depth-mask-opacity)) 0%,
+            rgba(0, 0, 0, calc(var(--depth-mask-opacity) * 0.5)) 40%,
+            transparent 70%);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   PERSPECTIVE SQUARES - Home Page
+   ───────────────────────────────────────────────────────────────────────── */
+
+.perspective-squares {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    perspective: 1000px;
+}
+
+.perspective-squares .square {
+    position: absolute;
+    border: 1px solid var(--neon-whisper);
+    opacity: var(--depth-shape-opacity);
+}
+
+.perspective-squares .square:nth-child(1) {
+    width: 90%;
+    height: 90%;
+    transform: translateZ(-100px);
+}
+
+.perspective-squares .square:nth-child(2) {
+    width: 75%;
+    height: 75%;
+    transform: translateZ(-200px);
+}
+
+.perspective-squares .square:nth-child(3) {
+    width: 60%;
+    height: 60%;
+    transform: translateZ(-300px);
+}
+
+.perspective-squares .square:nth-child(4) {
+    width: 45%;
+    height: 45%;
+    transform: translateZ(-400px);
+}
+
+.perspective-squares .square:nth-child(5) {
+    width: 30%;
+    height: 30%;
+    transform: translateZ(-500px);
+}
+
+.perspective-squares .square:nth-child(6) {
+    width: 15%;
+    height: 15%;
+    transform: translateZ(-600px);
+}
+
+.depth-name {
+    position: absolute;
+    font-size: clamp(0.8rem, 2vw, 1.2rem);
+    font-weight: 200;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--neon-whisper);
+    white-space: nowrap;
+    z-index: 10;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   CONCENTRIC CIRCLES - About Page  
+   ───────────────────────────────────────────────────────────────────────── */
+
+.concentric-circles {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.concentric-circles .circle {
+    position: absolute;
+    border: 1px solid var(--neon-whisper);
+    border-radius: 50%;
+    opacity: var(--depth-shape-opacity);
+}
+
+.concentric-circles .circle:nth-child(1) {
+    width: 90%;
+    height: 90%;
+}
+
+.concentric-circles .circle:nth-child(2) {
+    width: 75%;
+    height: 75%;
+}
+
+.concentric-circles .circle:nth-child(3) {
+    width: 60%;
+    height: 60%;
+}
+
+.concentric-circles .circle:nth-child(4) {
+    width: 45%;
+    height: 45%;
+}
+
+.concentric-circles .circle:nth-child(5) {
+    width: 30%;
+    height: 30%;
+}
+
+.concentric-circles .circle:nth-child(6) {
+    width: 15%;
+    height: 15%;
+}
+
+.depth-symbol {
+    position: absolute;
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: 100;
+    color: var(--neon-whisper);
+    z-index: 10;
+}
+
+.depth-signature {
+    position: absolute;
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+    font-weight: 200;
+    font-style: italic;
+    letter-spacing: 0.1em;
+    color: var(--neon-whisper);
+    z-index: 10;
+    font-family: 'Brush Script MT', cursive, var(--font-english);
+    transform: rotate(-5deg);
+    opacity: 0.7;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   SOUND WAVES - Demo Page
+   ───────────────────────────────────────────────────────────────────────── */
+
+.sound-waves {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sound-waves .wave {
+    position: absolute;
+    border: 1px solid var(--neon-whisper);
+    border-radius: 50%;
+    opacity: var(--depth-shape-opacity);
+    animation: waveBreath 4s ease-in-out infinite;
+}
+
+.sound-waves .wave:nth-child(1) {
+    width: 85%;
+    height: 40%;
+    animation-delay: 0s;
+}
+
+.sound-waves .wave:nth-child(2) {
+    width: 70%;
+    height: 35%;
+    animation-delay: 0.5s;
+}
+
+.sound-waves .wave:nth-child(3) {
+    width: 55%;
+    height: 30%;
+    animation-delay: 1s;
+}
+
+.sound-waves .wave:nth-child(4) {
+    width: 40%;
+    height: 25%;
+    animation-delay: 1.5s;
+}
+
+.sound-waves .wave:nth-child(5) {
+    width: 25%;
+    height: 20%;
+    animation-delay: 2s;
+}
+
+.sound-waves .wave:nth-child(6) {
+    width: 12%;
+    height: 15%;
+    animation-delay: 2.5s;
+}
+
+@keyframes waveBreath {
+
+    0%,
+    100% {
+        opacity: 0.3;
+        transform: scaleY(1);
+    }
+
+    50% {
+        opacity: 0.6;
+        transform: scaleY(1.1);
+    }
+}

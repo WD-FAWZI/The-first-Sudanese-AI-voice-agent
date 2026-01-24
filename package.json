@@ -2,13 +2,19 @@
   "name": "ai-agint2",
   "version": "1.0.0",
   "description": "A stunning, premium voice assistant interface with smooth animations and modern design aesthetics.",
-  "main": "about.js",
   "scripts": {
-    "start": "npx serve",
-    "server": "node local-server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "dependencies": {
+    "@vapi-ai/web": "^2.5.2",
+    "framer-motion": "^11.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.2.1",
+    "vite": "^5.2.0"
+  }
 }
