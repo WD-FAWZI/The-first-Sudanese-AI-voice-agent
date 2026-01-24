@@ -72,6 +72,75 @@ function VoiceAssistantUI() {
     const smoothY = useSpring(mouseY, springConfig);
 
     const [isActive, setIsActive] = useState(false);
+    const [vapi, setVapi] = useState(null);
+    const [callStatus, setCallStatus] = useState('inactive'); // inactive, loading, active
+
+    // Initialize Vapi
+    useEffect(() => {
+        const initVapi = async () => {
+            const storedKey = sessionStorage.getItem('active_vapi_key');
+            if (storedKey && window.Vapi) {
+                try {
+                    const { publicKey } = JSON.parse(storedKey);
+                    const vapiInstance = new window.Vapi(publicKey);
+
+                    vapiInstance.on('call-start', () => {
+                        console.log('Call started');
+                        setCallStatus('active');
+                        setIsActive(true);
+                    });
+
+                    vapiInstance.on('call-end', () => {
+                        console.log('Call ended');
+                        setCallStatus('inactive');
+                        setIsActive(false);
+                    });
+
+                    vapiInstance.on('volume-level', (level) => {
+                        // Optional: Use level to animate orb intensity
+                        // console.log('Volume level:', level);
+                    });
+
+                    vapiInstance.on('error', (e) => {
+                        console.error('Vapi error:', e);
+                        setCallStatus('inactive');
+                        setIsActive(false);
+                    });
+
+                    setVapi(vapiInstance);
+                } catch (e) {
+                    console.error('Failed to init Vapi:', e);
+                }
+            }
+        };
+        initVapi();
+    }, []);
+
+    const toggleCall = async () => {
+        if (!vapi) {
+            console.warn('Vapi not initialized or key missing. Please check settings.');
+            // Fallback for demo/visual purposes if no key
+            if (!sessionStorage.getItem('active_vapi_key')) {
+                setIsActive(!isActive);
+            }
+            return;
+        }
+
+        if (callStatus === 'active' || isActive) {
+            vapi.stop();
+        } else {
+            setCallStatus('loading');
+            // Placeholder Assistant ID - Replace with your own or fetch from config
+            // If window.VAPI_CONFIG exists, try to use it
+            const assistantId = window.VAPI_CONFIG?.assistantId || 'ed523a2b-9e53-4375-9e6e-2144d673199e';
+            try {
+                await vapi.start(assistantId);
+            } catch (e) {
+                console.error('Failed to start call:', e);
+                setCallStatus('inactive');
+            }
+        }
+    };
 
     // Track mouse and touch movement
     useEffect(() => {
@@ -183,11 +252,11 @@ function VoiceAssistantUI() {
                         tabIndex="0"
                         aria-label="تنشيط المساعد الصوتي"
                         className="voice-orb"
-                        onClick={() => setIsActive(!isActive)}
+                        onClick={toggleCall}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter' || e.key === ' ') {
                                 e.preventDefault();
-                                setIsActive(!isActive);
+                                toggleCall();
                             }
                         }}
                         style={{
