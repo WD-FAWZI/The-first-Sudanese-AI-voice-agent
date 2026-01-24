@@ -98,19 +98,19 @@ function VoiceAssistantUI() {
         };
     }, []);
 
+    // Initialize Vapi
     useEffect(() => {
         const initVapi = () => {
             if (!config.publicKey) {
-                const errorMsg = "Configuration Error: VITE_VAPI_PUBLIC_KEY is missing. Check Vercel Settings.";
-                console.error(errorMsg);
-                setConnectionError(errorMsg);
-                return false;
+                console.error("Vapi Config Missing: Public Key is undefined.");
+                setConnectionError("خطأ في الإعدادات: مفتاح API مفقود");
+                return;
             }
 
             try {
                 const vapiInstance = new Vapi(config.publicKey);
                 setVapi(vapiInstance);
-                setConnectionError(null);
+                setConnectionError(null); // Clear any previous errors
 
                 vapiInstance.on('call-start', () => {
                     setIsActive(true);
@@ -121,13 +121,18 @@ function VoiceAssistantUI() {
                     console.error("Vapi Error:", e);
                     setIsActive(false);
                     setIsConnecting(false);
-                    setConnectionError("حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.");
+                    // Handle specific error types if needed
+                    if (e.error?.message?.includes('400')) {
+                        // 400 Bad Request usually means invalid Assistant ID or Key
+                        setConnectionError("خطأ في الاتصال: بيانات الاعتماد غير صحيحة");
+                    } else {
+                        setConnectionError("حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.");
+                    }
                 });
-                return true;
+                // console.log("Vapi Initialized with Public Key ending in:", config.publicKey.slice(-4));
             } catch (err) {
                 console.error("Vapi Init Error:", err);
                 setConnectionError("فشل تهيئة خدمة الصوت.");
-                return false;
             }
         };
 
