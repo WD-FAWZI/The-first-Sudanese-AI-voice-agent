@@ -100,31 +100,33 @@ function VoiceAssistantUI() {
 
     useEffect(() => {
         const initVapi = () => {
-            if (config.publicKey) {
-                try {
-                    const vapiInstance = new Vapi(config.publicKey);
-                    setVapi(vapiInstance);
-                    setConnectionError(null);
+            if (!config.publicKey) {
+                const errorMsg = "Configuration Error: VITE_VAPI_PUBLIC_KEY is missing. Check Vercel Settings.";
+                console.error(errorMsg);
+                setConnectionError(errorMsg);
+                return false;
+            }
 
-                    vapiInstance.on('call-start', () => {
-                        setIsActive(true);
-                        setIsConnecting(false);
-                    });
-                    vapiInstance.on('call-end', () => setIsActive(false));
-                    vapiInstance.on('error', (e) => {
-                        console.error("Vapi Error:", e);
-                        setIsActive(false);
-                        setIsConnecting(false);
-                        setConnectionError("حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.");
-                    });
-                    return true;
-                } catch (err) {
-                    console.error("Vapi Init Error:", err);
-                    setConnectionError("فشل تهيئة خدمة الصوت.");
-                    return false;
-                }
-            } else {
-                setConnectionError("مفتاح API مفقود");
+            try {
+                const vapiInstance = new Vapi(config.publicKey);
+                setVapi(vapiInstance);
+                setConnectionError(null);
+
+                vapiInstance.on('call-start', () => {
+                    setIsActive(true);
+                    setIsConnecting(false);
+                });
+                vapiInstance.on('call-end', () => setIsActive(false));
+                vapiInstance.on('error', (e) => {
+                    console.error("Vapi Error:", e);
+                    setIsActive(false);
+                    setIsConnecting(false);
+                    setConnectionError("حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.");
+                });
+                return true;
+            } catch (err) {
+                console.error("Vapi Init Error:", err);
+                setConnectionError("فشل تهيئة خدمة الصوت.");
                 return false;
             }
         };

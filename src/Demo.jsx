@@ -115,43 +115,45 @@ function DemoPage() {
 
     useEffect(() => {
         const initVapi = () => {
-            if (config.publicKey) {
-                try {
-                    const vapiInstance = new Vapi(config.publicKey);
-                    setVapi(vapiInstance);
+            if (!config.publicKey) {
+                const errorMsg = "خطأ في التهيئة: VITE_VAPI_PUBLIC_KEY مفقود في إعدادات Vercel";
+                console.error("Configuration Error: VITE_VAPI_PUBLIC_KEY is missing. Check Vercel Settings.");
+                setStatus(errorMsg);
+                return false;
+            }
 
-                    vapiInstance.on('call-start', () => {
-                        setCallState('active');
-                        setStatus('المكالمة جارية');
-                        setHasPermission(true);
-                    });
+            try {
+                const vapiInstance = new Vapi(config.publicKey);
+                setVapi(vapiInstance);
 
-                    vapiInstance.on('call-end', () => {
-                        setCallState('idle');
-                        setStatus('تم إنهاء المكالمة');
-                        setTimeout(() => setStatus('جاهز للاتصال'), 2000);
-                    });
+                vapiInstance.on('call-start', () => {
+                    setCallState('active');
+                    setStatus('المكالمة جارية');
+                    setHasPermission(true);
+                });
 
-                    vapiInstance.on('message', (message) => {
-                        if (message.type === 'transcript' && message.transcriptType === 'final') {
-                            setTranscript(message.transcript);
-                        }
-                    });
+                vapiInstance.on('call-end', () => {
+                    setCallState('idle');
+                    setStatus('تم إنهاء المكالمة');
+                    setTimeout(() => setStatus('جاهز للاتصال'), 2000);
+                });
 
-                    vapiInstance.on('error', (e) => {
-                        console.error("Vapi Error:", e);
-                        setCallState('idle');
-                        setStatus('حدث خطأ في الاتصال');
-                    });
+                vapiInstance.on('message', (message) => {
+                    if (message.type === 'transcript' && message.transcriptType === 'final') {
+                        setTranscript(message.transcript);
+                    }
+                });
 
-                    return true;
-                } catch (err) {
-                    console.error("Vapi Init Error:", err);
-                    setStatus('فشل تهيئة الخدمة');
-                    return false;
-                }
-            } else {
-                setStatus('مفتاح API مفقود');
+                vapiInstance.on('error', (e) => {
+                    console.error("Vapi Error:", e);
+                    setCallState('idle');
+                    setStatus('حدث خطأ في الاتصال');
+                });
+
+                return true;
+            } catch (err) {
+                console.error("Vapi Init Error:", err);
+                setStatus('فشل تهيئة الخدمة');
                 return false;
             }
         };
