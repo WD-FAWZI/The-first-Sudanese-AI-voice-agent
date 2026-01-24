@@ -27,6 +27,17 @@
 </head>
 
 <body>
+    <script>
+        // Emergency: Unregister any existing service workers to fix 404/Cache issues
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function (registrations) {
+                for (let registration of registrations) {
+                    console.log('Unregistering SW:', registration);
+                    registration.unregister();
+                }
+            });
+        }
+    </script>
     <div id="root"></div>
 
     <!-- React & ReactDOM -->
@@ -44,9 +55,11 @@
         import Vapi from 'https://esm.sh/@vapi-ai/web';
         window.Vapi = Vapi.default || Vapi;
     </script>
+    <script src="vapi-config.js"></script>
     <script src="vapi-service.js"></script>
 
     <!-- App Script -->
+    <script type="text/babel" src="ErrorBoundary.js"></script>
     <script type="text/babel" src="app.js"></script>
 </body>
 

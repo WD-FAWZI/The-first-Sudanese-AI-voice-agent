@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار Vapi - زر بسيط</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .status {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 16px;
+            color: #555;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .status.active {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            margin: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .stop-btn {
+            background: linear-gradient(135deg, #f12711 0%, #f5af19 100%);
+        }
+
+        .info {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: right;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .info strong {
+            color: #856404;
+        }
+
+        .console-log {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            direction: ltr;
+        }
+
+        .console-log div {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🎤 اختبار Vapi المباشر</h1>
+
+        <div id="status" class="status">جاهز للاتصال</div>
+
+        <div>
+            <button id="startBtn" onclick="startVapiCall()">
+                📞 ابدأ المكالمة
+            </button>
+            <button id="stopBtn" class="stop-btn" onclick="stopVapiCall()" style="display: none;">
+                ⏹️ إنهاء المكالمة
+            </button>
+        </div>
+
+        <div class="info">
+            <strong>📋 تعليمات:</strong><br>
+            1. تأكد من وضع <strong>Public Key</strong> في <code>vapi-config.js</code><br>
+            2. تأكد من وضع <strong>Assistant ID</strong> (اختياري)<br>
+            3. افتح <strong>Developer Tools (F12)</strong> لرؤية التفاصيل<br>
+            4. اضغط "ابدأ المكالمة" واسمح بالوصول للميكروفون
+        </div>
+
+        <div class="console-log" id="consoleLog"></div>
+    </div>
+
+    <!-- Vapi Web SDK with Fallback -->
+    <script>
+        // Check if SDK loaded successfully
+        window.vapiSDKLoadAttempts = 0;
+        window.vapiSDKLoaded = false;
+
+        function checkVapiSDK() {
+            if (typeof window.Vapi !== 'undefined') {
+                console.log('✅ Vapi SDK loaded successfully from CDN');
+                window.vapiSDKLoaded = true;
+                return true;
+            }
+            return false;
+        }
+
+        function loadVapiSDKFallback() {
+            console.log('⚠️ Primary CDN failed, trying fallback...');
+            const script = document.createElement('script');
+            script.src = 'https://unpkg.com/@vapi-ai/web@2.0.5/dist/index.js';
+            script.onload = () => {
+                if (checkVapiSDK()) {
+                    console.log('✅ Loaded from fallback CDN');
+                } else {
+                    console.error('❌ Fallback CDN also failed');
+                    alert('⚠️ فشل تحميل Vapi SDK\nالرجاء:\n1. التأكد من اتصال الإنترنت\n2. تعطيل Ad Blocker\n3. المحاولة مرة أخرى');
+                }
+            };
+            script.onerror = () => {
+                console.error('❌ All CDN attempts failed');
+                alert('❌ فشل تحميل Vapi SDK من جميع المصادر\nالرجاء التحقق من:\n• الاتصال بالإنترنت\n• إعدادات Firewall/VPN\n• حاجب الإعلانات (Ad Blocker)');
+            };
+            document.head.appendChild(script);
+        }
+    </script>
+
+    <!-- Primary CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@vapi-ai/web@latest/dist/index.js" onload="checkVapiSDK()"
+        onerror="loadVapiSDKFallback()"></script>
+
+    <!-- Vapi Configuration & Service -->
+    <script src="vapi-config.js"></script>
+    <script src="vapi-service.js"></script>
+
+    <script>
+        // Diagnostic: Check what's loaded
+        setTimeout(() => {
+            console.log('=== DIAGNOSTIC CHECK ===');
+            console.log('Vapi SDK:', typeof window.Vapi !== 'undefined' ? '✅ Loaded' : '❌ Not Loaded');
+            console.log('VAPI_CONFIG:', typeof window.VAPI_CONFIG !== 'undefined' ? '✅ Loaded' : '❌ Not Loaded');
+            console.log('VAPIService:', typeof window.VAPIService !== 'undefined' ? '✅ Loaded' : '❌ Not Loaded');
+
+            if (window.VAPI_CONFIG) {
+                console.log('Public Key:', window.VAPI_CONFIG.publicKey ? '✅ Present' : '❌ Missing');
+                console.log('Assistant ID:', window.VAPI_CONFIG.assistantId ? '✅ Present' : '⚠️ Empty (will use default)');
+            }
+
+            if (typeof window.Vapi === 'undefined') {
+                console.error('❌ Vapi SDK failed to load!');
+                console.error('Possible reasons:');
+                console.error('1. No internet connection');
+                console.error('2. Ad Blocker blocking the CDN');
+                console.error('3. Firewall/VPN blocking cdn.jsdelivr.net');
+                console.error('4. Network restrictions in your country');
+            }
+            console.log('========================');
+        }, 2000);
+    </script>
+
+    <script>
+        const statusEl = document.getElementById('status');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const consoleLog = document.getElementById('consoleLog');
+
+        let isCallActive = false;
+
+        // Override console.log to show in UI
+        const originalLog = console.log;
+        console.log = function (...args) {
+            originalLog.apply(console, args);
+            addLog(args.join(' '));
+        };
+
+        const originalError = console.error;
+        console.error = function (...args) {
+            originalError.apply(console, args);
+            addLog('❌ ' + args.join(' '), true);
+        };
+
+        function addLog(message, isError = false) {
+            const div = document.createElement('div');
+            div.textContent = new Date().toLocaleTimeString() + ' - ' + message;
+            div.style.color = isError ? '#ff6b6b' : '#00ff00';
+            consoleLog.appendChild(div);
+            consoleLog.scrollTop = consoleLog.scrollHeight;
+        }
+
+        function updateStatus(message, type = 'normal') {
+            statusEl.textContent = message;
+            statusEl.className = 'status';
+            if (type === 'active') statusEl.classList.add('active');
+            if (type === 'error') statusEl.classList.add('error');
+        }
+
+        function updateButtons(calling) {
+            isCallActive = calling;
+            startBtn.style.display = calling ? 'none' : 'inline-block';
+            stopBtn.style.display = calling ? 'inline-block' : 'none';
+        }
+
+        // Setup Vapi event listeners
+        function setupVapiListeners() {
+            if (!window.VAPIService || !window.VAPIService.instance) {
+                console.log('⏳ Waiting for Vapi...');
+                setTimeout(setupVapiListeners, 500);
+                return;
+            }
+
+            const vapi = window.VAPIService;
+
+            vapi.on('call-start', () => {
+                console.log('📞 Call started!');
+                updateStatus('المكالمة نشطة - تحدث الآن', 'active');
+                updateButtons(true);
+            });
+
+            vapi.on('call-end', () => {
+                console.log('📞 Call ended');
+                updateStatus('تم إنهاء المكالمة');
+                updateButtons(false);
+            });
+
+            vapi.on('speech-start', () => {
+                console.log('🗣️ User speaking');
+                updateStatus('يتم الاستماع...', 'active');
+            });
+
+            vapi.on('speech-end', () => {
+                console.log('🤫 User stopped');
+                updateStatus('جاري المعالجة...', 'active');
+            });
+
+            vapi.on('message', (message) => {
+                console.log('💬 Message:', message.type);
+                if (message.type === 'transcript' && message.role === 'assistant') {
+                    updateStatus('الوكيل: ' + (message.transcript || message.text), 'active');
+                }
+            });
+
+            vapi.on('error', (error) => {
+                console.error('Vapi error:', error.message || error);
+                updateStatus('خطأ: ' + (error.message || 'حدث خطأ'), 'error');
+                updateButtons(false);
+            });
+
+            console.log('✅ Event listeners ready');
+        }
+
+        async function startVapiCall() {
+            console.log('🎯 Attempting to start call...');
+            updateStatus('جاري الاتصال...', 'active');
+            startBtn.disabled = true;
+
+            try {
+                // Wait for Vapi to be ready
+                let retries = 0;
+                while ((!window.VAPIService || !window.VAPIService.instance) && retries < 20) {
+                    console.log('⏳ Waiting for Vapi initialization...');
+                    await new Promise(r => setTimeout(r, 500));
+                    retries++;
+                }
+
+                if (!window.VAPIService || !window.VAPIService.instance) {
+                    throw new Error('Vapi failed to initialize after 10 seconds');
+                }
+
+                console.log('✅ Vapi is ready');
+                await window.VAPIService.startCall();
+
+            } catch (error) {
+                console.error('Failed to start call:', error.message);
+                updateStatus('خطأ: ' + error.message, 'error');
+                startBtn.disabled = false;
+            }
+        }
+
+        function stopVapiCall() {
+            console.log('🛑 Stopping call...');
+            if (window.VAPIService) {
+                window.VAPIService.endCall();
+            }
+            updateStatus('تم إيقاف المكالمة');
+            updateButtons(false);
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            console.log('📦 Page loaded, setting up Vapi...');
+            setTimeout(setupVapiListeners, 1000);
+        });
+    </script>
+</body>
+
+</html>

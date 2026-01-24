@@ -58,26 +58,16 @@ const MicrophoneIcon = () => (
     </svg>
 );
 
-const PlayIcon = () => (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-        <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="1.5" />
-        <path d="M10 8l6 4-6 4V8z" fill="currentColor" />
+const PhoneIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
     </svg>
 );
 
-const PauseIcon = () => (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <circle cx="12" cy="12" r="10" />
-        <line x1="10" y1="9" x2="10" y2="15" />
-        <line x1="14" y1="9" x2="14" y2="15" />
-    </svg>
-);
-
-const RefreshIcon = () => (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path d="M23 4v6h-6" />
-        <path d="M1 20v-6h6" />
-        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+const PhoneOffIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.42 19.42 0 0 1-3.33-2.67m-2.67-3.34a19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"></path>
+        <line x1="23" y1="1" x2="1" y2="23"></line>
     </svg>
 );
 
@@ -94,12 +84,14 @@ function DemoPage() {
     const smoothX = useSpring(mouseX, springConfig);
     const smoothY = useSpring(mouseY, springConfig);
 
-    const [isListening, setIsListening] = useState(false);
-    const [status, setStatus] = useState('جاهز للاستماع');
+    const [vapi, setVapi] = useState(null);
+    const [status, setStatus] = useState('جاهز للاتصال');
+    const [callState, setCallState] = useState('idle'); // idle, connecting, active
     const [transcript, setTranscript] = useState('');
     const [hasPermission, setHasPermission] = useState(null);
 
-    const timeoutRef = useRef(null);
+    // Placeholder for Assistant ID - Replace with your actual Assistant ID or config
+    const ASSISTANT_ID = window.VAPI_CONFIG?.assistantId || "YOUR_ASSISTANT_ID";
 
     // Track mouse and touch movement
     useEffect(() => {
@@ -123,50 +115,86 @@ function DemoPage() {
         };
     }, []);
 
-    const startListening = async () => {
-        console.log('🎤 startListening called!');
+    // Initialize Vapi
+    useEffect(() => {
+        const initVapi = () => {
+            const publicKey = window.VAPIService ? window.VAPIService.getPublicKey() : null;
+            if (publicKey && window.Vapi) {
+                try {
+                    const vapiInstance = new window.Vapi(publicKey);
+                    setVapi(vapiInstance);
 
-        // Start UI immediately (don't wait for mic permission)
-        setIsListening(true);
-        setStatus('جاري الاستماع... (وضع التجربة)');
-        console.log('🎤 UI updated immediately');
+                    vapiInstance.on('call-start', () => {
+                        setCallState('active');
+                        setStatus('المكالمة جارية');
+                        setHasPermission(true);
+                    });
 
-        // Try to get microphone in background (optional)
-        let hasMic = false;
-        try {
-            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                stream.getTracks().forEach(track => track.stop());
-                hasMic = true;
-                setHasPermission(true);
-                setStatus('جاري الاستماع... تحدث الآن');
-                console.log('🎤 Microphone enabled');
+                    vapiInstance.on('call-end', () => {
+                        setCallState('idle');
+                        setStatus('تم إنهاء المكالمة');
+                        setTimeout(() => setStatus('جاهز للاتصال'), 2000);
+                    });
+
+                    vapiInstance.on('message', (message) => {
+                        if (message.type === 'transcript' && message.transcriptType === 'final') {
+                            setTranscript(message.transcript);
+                        }
+                    });
+
+                    vapiInstance.on('error', (e) => {
+                        console.error("Vapi Error:", e);
+                        setCallState('idle');
+                        setStatus('حدث خطأ في الاتصال');
+                    });
+
+                    return true;
+                } catch (err) {
+                    console.error("Vapi Init Error:", err);
+                    setStatus('فشل تهيئة الخدمة');
+                    return false;
+                }
             }
-        } catch (micError) {
-            console.log('Microphone not available:', micError.message);
-            setHasPermission(null);
+            return false;
+        };
+
+        // Retry initialization until ready
+        if (!initVapi()) {
+            let attempts = 0;
+            const interval = setInterval(() => {
+                attempts++;
+                if (initVapi() || attempts > 10) {
+                    clearInterval(interval);
+                }
+            }, 500);
+            return () => clearInterval(interval);
+        }
+    }, []);
+
+
+    const toggleCall = () => {
+        if (!vapi) {
+            const publicKey = window.VAPIService?.getPublicKey();
+            if (!publicKey) {
+                alert("يرجى إعداد مفاتيح API في الإعدادات أولاً.");
+                return;
+            }
+            alert("جاري تهيئة خدمة الصوت... يرجى الانتظار قليلاً.");
+            return;
         }
 
-        // Show demo response after 3 seconds
-        timeoutRef.current = setTimeout(() => {
-            setTranscript('مرحباً! أنا الوكيل الصوتي الذكي. كيف يمكنني مساعدتك اليوم؟');
-            setStatus('تم التعرف على الصوت بنجاح ✓');
-            setIsListening(false);
-            setHasPermission(true);
-        }, 3000);
-    };
-
-    const stopListening = () => {
-        setIsListening(false);
-        setStatus('تم إيقاف الاستماع');
-        if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
-
-    const resetDemo = () => {
-        setIsListening(false);
-        setStatus('جاهز للاستماع');
-        setTranscript('');
-        setHasPermission(null);
+        if (callState === 'active') {
+            vapi.stop();
+            setStatus('جاري إنهاء المكالمة...');
+        } else {
+            if (ASSISTANT_ID === "YOUR_ASSISTANT_ID") {
+                alert("الرجاء تحديد معرف المساعد في ملف الإعدادات.");
+                return;
+            }
+            setCallState('connecting');
+            setStatus('جاري الاتصال...');
+            vapi.start(ASSISTANT_ID);
+        }
     };
 
     return (
@@ -206,7 +234,7 @@ function DemoPage() {
                         <a href="index.html" className="nav-link">الرئيسية</a>
                         <a href="about.html" className="nav-link">حول</a>
                         <a href="demo.html" className="nav-link active">تجربة</a>
-                        {/* Settings link hidden temporarily */}
+                        <a href="settings.html" className="nav-link" style={{ fontSize: '0.8em' }}>إعدادات</a>
                     </motion.div>
                 </div>
             </nav>
@@ -223,8 +251,8 @@ function DemoPage() {
                     <motion.div
                         className="voice-orb"
                         style={{
-                            animationDuration: isListening ? '2s, 3s, 1.5s' : '8s, 6s, 4s',
-                            boxShadow: isListening
+                            animationDuration: callState === 'active' ? '2s, 3s, 1.5s' : '8s, 6s, 4s',
+                            boxShadow: callState === 'active'
                                 ? '0 0 50px rgba(0, 245, 255, 0.8), 0 0 100px rgba(0, 245, 255, 0.5), 0 0 150px rgba(0, 245, 255, 0.3)'
                                 : '0 0 30px rgba(0, 245, 255, 0.6), 0 0 60px rgba(0, 245, 255, 0.3)'
                         }}
@@ -250,7 +278,7 @@ function DemoPage() {
 
                     {/* Status - Dynamic system messages */}
                     <motion.p
-                        className={`status-text ${isListening ? 'active' : ''} ${hasPermission === false ? 'error' : ''}`}
+                        className={`status-text ${callState === 'active' ? 'active' : ''} ${hasPermission === false ? 'error' : ''}`}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.5 }}
@@ -277,42 +305,28 @@ function DemoPage() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.7 }}
+                        style={{ display: 'flex', justifyContent: 'center' }}
                     >
-                        {!isListening ? (
-                            <motion.button
-                                className="btn btn-primary"
-                                onClick={startListening}
-                                whileHover={{ scale: 1.05, y: -3 }}
-                                whileTap={{ scale: 0.95 }}
-                            >
-                                <PlayIcon />
-                                ابدأ الاستماع
-                            </motion.button>
-                        ) : (
-                            <motion.button
-                                className="btn btn-secondary"
-                                onClick={stopListening}
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                            >
-                                <PauseIcon />
-                                إيقاف
-                            </motion.button>
-                        )}
-
-                        {transcript && (
-                            <motion.button
-                                className="btn btn-secondary"
-                                onClick={resetDemo}
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                            >
-                                <RefreshIcon />
-                                إعادة تعيين
-                            </motion.button>
-                        )}
+                        <motion.button
+                            className={`btn ${callState === 'active' ? 'btn-secondary' : 'btn-primary'}`}
+                            onClick={toggleCall}
+                            whileHover={{ scale: 1.05, y: -3 }}
+                            whileTap={{ scale: 0.95 }}
+                            disabled={callState === 'connecting'}
+                            style={{ opacity: callState === 'connecting' ? 0.7 : 1, minWidth: '200px' }}
+                        >
+                            {callState === 'active' ? (
+                                <>
+                                    <PhoneOffIcon />
+                                    إنهاء المكالمة
+                                </>
+                            ) : (
+                                <>
+                                    <PhoneIcon />
+                                    {callState === 'connecting' ? 'جاري الاتصال...' : 'اتصال مباشر'}
+                                </>
+                            )}
+                        </motion.button>
                     </motion.div>
 
                     {/* Instructions */}
@@ -327,10 +341,10 @@ function DemoPage() {
                             كيفية الاستخدام:
                         </h3>
                         <ol style={{ textAlign: 'right', paddingRight: '1.5rem', lineHeight: '2' }}>
-                            <li>اضغط على زر "ابدأ الاستماع"</li>
+                            <li>اضغط على زر "اتصال مباشر" لبدء المكالمة</li>
                             <li>اسمح بالوصول للميكروفون عند الطلب</li>
-                            <li>تحدث بوضوح باللغة العربية أو الإنجليزية</li>
-                            <li>سيظهر النص المُعرف تلقائياً</li>
+                            <li>تحدث بوضوح مع الوكيل الصوتي</li>
+                            <li>اضغط على "إنهاء المكالمة" عند الانتهاء</li>
                         </ol>
                     </motion.div>
                 </motion.div>
@@ -356,4 +370,8 @@ function DemoPage() {
 // ═══════════════════════════════════════════════════════════════════════════
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<DemoPage />);
+root.render(
+    <ErrorBoundary>
+        <DemoPage />
+    </ErrorBoundary>
+);

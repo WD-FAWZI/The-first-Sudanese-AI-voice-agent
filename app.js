@@ -6,7 +6,7 @@ const { useState, useEffect, useRef } = React;
 // ═══════════════════════════════════════════════════════════════════════════
 
 // Placeholder for Assistant ID - Replace with your actual Assistant ID
-const ASSISTANT_ID = "YOUR_ASSISTANT_ID";
+const ASSISTANT_ID = window.VAPI_CONFIG?.assistantId || "YOUR_ASSISTANT_ID";
 
 // ═══════════════════════════════════════════════════════════════════════════
 // SVG Icons - Minimal Neon Style
@@ -80,6 +80,8 @@ function VoiceAssistantUI() {
 
     const [isActive, setIsActive] = useState(false);
     const [vapi, setVapi] = useState(null);
+    const [connectionError, setConnectionError] = useState(null);
+    const [isConnecting, setIsConnecting] = useState(false);
 
     // Track mouse and touch movement
     useEffect(() => {
@@ -106,28 +108,45 @@ function VoiceAssistantUI() {
     // Initialize Vapi
     useEffect(() => {
         const initVapi = () => {
-             const publicKey = window.VAPIService ? window.VAPIService.getPublicKey() : null;
-             if (publicKey && window.Vapi) {
-                 const vapiInstance = new window.Vapi(publicKey);
-                 setVapi(vapiInstance);
+            const publicKey = window.VAPIService ? window.VAPIService.getPublicKey() : null;
+            if (publicKey && window.Vapi) {
+                try {
+                    const vapiInstance = new window.Vapi(publicKey);
+                    setVapi(vapiInstance);
+                    setConnectionError(null);
 
-                 vapiInstance.on('call-start', () => setIsActive(true));
-                 vapiInstance.on('call-end', () => setIsActive(false));
-                 vapiInstance.on('error', (e) => {
-                     console.error(e);
-                     setIsActive(false);
-                 });
-                 return true;
-             }
-             return false;
+                    vapiInstance.on('call-start', () => {
+                        setIsActive(true);
+                        setIsConnecting(false);
+                    });
+                    vapiInstance.on('call-end', () => setIsActive(false));
+                    vapiInstance.on('error', (e) => {
+                        console.error("Vapi Error:", e);
+                        setIsActive(false);
+                        setIsConnecting(false);
+                        setConnectionError("حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.");
+                    });
+                    return true;
+                } catch (err) {
+                    console.error("Vapi Init Error:", err);
+                    setConnectionError("فشل تهيئة خدمة الصوت.");
+                    return false;
+                }
+            }
+            return false;
         };
 
         // Try immediately
         if (!initVapi()) {
             // Retry until ready (VAPIService or Vapi might be loading)
+            let attempts = 0;
             const interval = setInterval(() => {
+                attempts++;
                 if (initVapi()) {
                     clearInterval(interval);
+                } else if (attempts > 10) {
+                    clearInterval(interval);
+                    setConnectionError("نواجه صعوبة في الاتصال بالخادم الصوتي.");
                 }
             }, 500);
             return () => clearInterval(interval);
@@ -155,6 +174,7 @@ function VoiceAssistantUI() {
         if (isActive) {
             vapi.stop();
         } else {
+            setIsConnecting(true);
             vapi.start(ASSISTANT_ID);
         }
     };
@@ -180,6 +200,30 @@ function VoiceAssistantUI() {
 
     return (
         <div className="container">
+            {/* Connection Alert */}
+            {connectionError && (
+                <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    style={{
+                        position: 'fixed',
+                        top: '20px',
+                        left: '50%',
+                        x: '-50%',
+                        zIndex: 1000,
+                        background: 'rgba(255, 77, 79, 0.9)',
+                        color: 'white',
+                        padding: '10px 20px',
+                        borderRadius: '8px',
+                        backdropFilter: 'blur(10px)',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                        direction: 'rtl'
+                    }}
+                >
+                    ⚠️ {connectionError}
+                </motion.div>
+            )}
+
             {/* ─────────────────────────────────────────────────────────────
                 Hidden Depth Background - Secret Ink Effect
                 ───────────────────────────────────────────────────────────── */}
@@ -208,7 +252,7 @@ function VoiceAssistantUI() {
                         <a href="index.html" className="nav-link active">الرئيسية</a>
                         <a href="about.html" className="nav-link">حول</a>
                         <a href="demo.html" className="nav-link">تجربة</a>
-                        <a href="settings.html" className="nav-link" style={{fontSize: '0.8em'}}>إعدادات</a>
+                        <a href="settings.html" className="nav-link" style={{ fontSize: '0.8em' }}>إعدادات</a>
                     </motion.div>
                 </div>
             </nav>
@@ -281,7 +325,7 @@ function VoiceAssistantUI() {
                             ease: [0.16, 1, 0.3, 1]
                         }}
                     >
-                        {isActive ? "جاري الاستماع..." : "كيف يمكنني مساعدتك اليوم؟"}
+                        {isActive ? "جاري الاستماع..." : (isConnecting ? "جاري الاتصال..." : "كيف يمكنني مساعدتك اليوم؟")}
                     </motion.h1>
 
                     <motion.p
@@ -338,4 +382,8 @@ function VoiceAssistantUI() {
 // ═══════════════════════════════════════════════════════════════════════════
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<VoiceAssistantUI />);
+root.render(
+    <ErrorBoundary>
+        <VoiceAssistantUI />
+    </ErrorBoundary>
+);
