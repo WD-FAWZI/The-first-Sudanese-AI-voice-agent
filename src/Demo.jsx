@@ -116,10 +116,9 @@ function DemoPage() {
     useEffect(() => {
         const initVapi = () => {
             if (!config.publicKey) {
-                const errorMsg = "خطأ في التهيئة: VITE_VAPI_PUBLIC_KEY مفقود في إعدادات Vercel";
-                console.error("Configuration Error: VITE_VAPI_PUBLIC_KEY is missing. Check Vercel Settings.");
-                setStatus(errorMsg);
-                return false;
+                console.error("Vapi Config Missing: Public Key is undefined.");
+                setStatus("خطأ في الإعدادات: مفتاح API مفقود");
+                return;
             }
 
             try {
@@ -147,7 +146,12 @@ function DemoPage() {
                 vapiInstance.on('error', (e) => {
                     console.error("Vapi Error:", e);
                     setCallState('idle');
-                    setStatus('حدث خطأ في الاتصال');
+                    // Handle specific error types if needed
+                    if (e.error?.message?.includes('400')) {
+                        setStatus("خطأ في الاتصال: بيانات الاعتماد غير صحيحة");
+                    } else {
+                        setStatus('حدث خطأ في الاتصال');
+                    }
                 });
 
                 return true;
