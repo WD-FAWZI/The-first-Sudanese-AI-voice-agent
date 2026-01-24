@@ -151,7 +151,16 @@ function VoiceAssistantUI() {
             vapi.stop();
         } else {
             setIsConnecting(true);
-            vapi.start(config.assistantId);
+            vapi.start(config.assistantId)
+                .catch((e) => {
+                    console.error("Call start error:", e);
+                    if (e.message?.includes('permission') || e.name === 'NotAllowedError') {
+                        setConnectionError("يرجى السماح بالوصول للميكروفون للمتابعة");
+                    } else {
+                        setConnectionError("حدث خطأ أثناء بدء المكالمة");
+                    }
+                    setIsConnecting(false);
+                });
         }
     };
 

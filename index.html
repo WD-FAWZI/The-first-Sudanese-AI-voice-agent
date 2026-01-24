@@ -27,15 +27,6 @@
 </head>
 
 <body>
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(function (registrations) {
-                for (let registration of registrations) {
-                    registration.unregister();
-                }
-            });
-        }
-    </script>
     <div id="root"></div>
 
     <!-- Vite Entry Point -->
