@@ -6,7 +6,8 @@ const { useState, useEffect, useRef } = React;
 // ═══════════════════════════════════════════════════════════════════════════
 
 // Placeholder for Assistant ID - Replace with your actual Assistant ID
-const ASSISTANT_ID = window.VAPI_CONFIG?.assistantId || "YOUR_ASSISTANT_ID";
+// Load Assistant ID from Config
+const ASSISTANT_ID = window.VAPI_CONFIG?.assistantId || null;
 
 // ═══════════════════════════════════════════════════════════════════════════
 // SVG Icons - Minimal Neon Style
@@ -155,19 +156,24 @@ function VoiceAssistantUI() {
 
     const toggleCall = () => {
         if (!vapi) {
-            // Try to init again?
+            console.warn("Voice service not ready yet. Retrying initialization...");
+            // Attempt re-init logic could go here, or just show the error state
+            setConnectionError("جاري تهيئة الخدمة الصوتية... الرجاء الانتظار");
             const publicKey = window.VAPIService?.getPublicKey();
-            if (!publicKey) {
-                alert("Please configure Vapi keys in Settings first.");
-                return;
+            if (publicKey && window.Vapi && !vapi) {
+                // Quick retry attempt
+                try {
+                    const vapiInstance = new window.Vapi(publicKey);
+                    setVapi(vapiInstance);
+                    vapiInstance.start(ASSISTANT_ID);
+                } catch (e) { console.error(e); }
             }
-            // If we have key but no vapi instance, something went wrong or init didn't happen
-            alert("Voice service is initializing. Please try again in a moment.");
             return;
         }
 
-        if (ASSISTANT_ID === "YOUR_ASSISTANT_ID") {
-            alert("Please set a valid ASSISTANT_ID in app.js");
+        if (!ASSISTANT_ID) {
+            console.error("Missing ASSISTANT_ID in configuration");
+            setConnectionError("لم يتم العثور على معرف المساعد");
             return;
         }
 

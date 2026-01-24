@@ -9,33 +9,19 @@ const VAPIService = (() => {
 
     // Initialize the service with the config file keys
     const init = async () => {
-        // First try to use config file
-        if (window.VAPI_CONFIG && window.VAPI_CONFIG.publicKey !== 'YOUR_VAPI_PUBLIC_KEY_HERE') {
+        // Direct load from config - Bypass settings check
+        if (window.VAPI_CONFIG && window.VAPI_CONFIG.publicKey) {
             activeKey = {
-                name: 'Environment Config',
+                name: 'Environment/Config',
                 publicKey: window.VAPI_CONFIG.publicKey,
-                privateKey: window.VAPI_CONFIG.privateKey
+                // privateKey is not exposed client-side for security
             };
             isInitialized = true;
-            console.log('🔑 VAPI Service initialized from config file');
+            console.log('🔑 VAPI Service initialized with Public Key');
             return true;
         }
 
-        // Fallback to session storage (from settings page)
-        const storedKey = sessionStorage.getItem('active_vapi_key');
-        if (storedKey) {
-            try {
-                activeKey = JSON.parse(storedKey);
-                isInitialized = true;
-                console.log('🔑 VAPI Service initialized with key:', activeKey.name);
-                return true;
-            } catch (error) {
-                console.error('Failed to parse active key:', error);
-                return false;
-            }
-        }
-
-        console.warn('⚠️ VAPI Service: No keys configured');
+        console.warn('⚠️ VAPI Service: No Public Key configured in vapi-config.js');
         return false;
     };
 
