@@ -7,6 +7,35 @@ const VAPIService = (() => {
     let activeKey = null;
     let isInitialized = false;
 
+    // Low-Latency Configuration (Recommended)
+    const defaultConfig = {
+        transcriber: {
+            provider: "deepgram",
+            model: "nova-2",
+            language: "ar", // Arabic support
+            smartFormat: true,
+        },
+        model: {
+            provider: "openai",
+            model: "gpt-4o-mini",
+            messages: [
+                {
+                    role: "system",
+                    content: "أنت مساعد ذكي ومفيد يتحدث باللهجة السودانية. ردودك يجب أن تكون قصيرة ومختصرة وسريعة."
+                }
+            ],
+            maxTokens: 250,
+            temperature: 0.7
+        },
+        voice: {
+            provider: "11labs",
+            model: "eleven_turbo_v2_5",
+            voiceId: "21m00Tcm4TlvDq8ikWAM", // Default voice (Rachel)
+            stability: 0.5,
+            similarityBoost: 0.75
+        }
+    };
+
     // Initialize the service with the config file keys
     const init = async () => {
         // First try to use config file
@@ -90,12 +119,18 @@ const VAPIService = (() => {
 
     // Start a voice call
     const startCall = async (assistantId, options = {}) => {
+        const payload = { ...options };
+
+        if (assistantId) {
+            payload.assistantId = assistantId;
+        } else if (!payload.assistant) {
+            // If no assistantId and no inline assistant config, use default low-latency config
+            payload.assistant = defaultConfig;
+        }
+
         return callAPI('call/start', {
             method: 'POST',
-            body: {
-                assistantId,
-                ...options
-            }
+            body: payload
         });
     };
 
@@ -124,7 +159,7 @@ const VAPIService = (() => {
     const createAssistant = async (config) => {
         return callAPI('assistant', {
             method: 'POST',
-            body: config
+            body: config || defaultConfig
         });
     };
 
@@ -138,7 +173,8 @@ const VAPIService = (() => {
         endCall,
         getCallHistory,
         getAssistants,
-        createAssistant
+        createAssistant,
+        defaultConfig
     };
 })();
 
