@@ -156,7 +156,7 @@ function VoiceAssistantUI() {
             vapi.stop();
         } else {
             setIsConnecting(true);
-            vapi.start(config.assistantId)
+            vapi.start(config.assistantId, config.lowLatencyConfig)
                 .catch((e) => {
                     console.error("Call start error:", e);
                     if (e.message?.includes('permission') || e.name === 'NotAllowedError') {
