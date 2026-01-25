@@ -8,6 +8,22 @@ const config = {
     publicKey: import.meta.env.VITE_VAPI_PUBLIC_KEY,
     assistantId: import.meta.env.VITE_VAPI_ASSISTANT_ID,
     apiBaseUrl: 'https://api.vapi.ai',
+    // Low latency configuration overrides
+    lowLatencyConfig: {
+        transcriber: {
+            provider: "deepgram",
+            model: "nova-2",
+            language: "ar"
+        },
+        model: {
+            provider: "openai",
+            model: "gpt-4o-mini"
+        },
+        voice: {
+            provider: "11labs",
+            model: "eleven_turbo_v2_5"
+        }
+    }
 };
 
 // Strict check for Production Keys
