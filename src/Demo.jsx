@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 import Vapi from '@vapi-ai/web';
+import { getRemoteMaintenanceStatus } from './maintenance';
 import config from './config';
 import './styles.css';
 import './pages.css';
@@ -124,6 +125,7 @@ function DemoPage() {
             try {
                 const vapiInstance = new Vapi(config.publicKey);
                 setVapi(vapiInstance);
+                console.log("Demo: Vapi Initialized with Public Key ending in:", config.publicKey ? config.publicKey.slice(-4) : 'NONE');
 
                 vapiInstance.on('call-start', () => {
                     setCallState('active');
@@ -167,6 +169,20 @@ function DemoPage() {
 
 
     const toggleCall = async () => {
+        const originalStatus = status;
+        setStatus('جاري التحقق من الحالة...');
+
+        try {
+            const maintenance = await getRemoteMaintenanceStatus();
+            if (maintenance.active) {
+                setStatus(maintenance.message);
+                return;
+            }
+        } catch (e) {
+            console.error("Maintenance check failed");
+        }
+        setStatus(originalStatus);
+
         if (!vapi) {
             console.warn("Vapi instance not ready");
             setStatus("خطأ في تهيئة الخدمة الصوتية");
@@ -190,6 +206,7 @@ function DemoPage() {
 
                 setCallState('connecting');
                 setStatus('جاري الاتصال...');
+                console.log("Demo: Starting call with Assistant ID:", config.assistantId);
                 vapi.start(config.assistantId);
             } catch (err) {
                 console.error("Microphone permission denied or error:", err);

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import Vapi from '@vapi-ai/web';
+import { getRemoteMaintenanceStatus } from './maintenance';
 import config from './config';
 import './styles.css';
 import './pages.css';
@@ -129,7 +130,7 @@ function VoiceAssistantUI() {
                         setConnectionError("حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.");
                     }
                 });
-                // console.log("Vapi Initialized with Public Key ending in:", config.publicKey.slice(-4));
+                console.log("Vapi Initialized with Public Key ending in:", config.publicKey ? config.publicKey.slice(-4) : 'NONE');
             } catch (err) {
                 console.error("Vapi Init Error:", err);
                 setConnectionError("فشل تهيئة خدمة الصوت.");
@@ -139,7 +140,20 @@ function VoiceAssistantUI() {
         initVapi();
     }, []);
 
-    const toggleCall = () => {
+    const toggleCall = async () => {
+        setIsConnecting(true); // نوضح للمستخدم أننا نتأكد من الحالة
+        try {
+            const maintenance = await getRemoteMaintenanceStatus();
+            if (maintenance.active) {
+                setConnectionError(maintenance.message);
+                setIsConnecting(false);
+                return;
+            }
+        } catch (e) {
+            console.error("Maintenance check failed, proceeding with caution.");
+        }
+        setIsConnecting(false);
+
         if (!vapi) {
             console.warn("Voice service initializing...");
             setConnectionError("جاري تهيئة الخدمة الصوتية...");
@@ -156,6 +170,7 @@ function VoiceAssistantUI() {
             vapi.stop();
         } else {
             setIsConnecting(true);
+            console.log("Starting call with Assistant ID:", config.assistantId);
             vapi.start(config.assistantId)
                 .catch((e) => {
                     console.error("Call start error:", e);
