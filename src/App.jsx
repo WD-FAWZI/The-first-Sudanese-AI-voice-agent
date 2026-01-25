@@ -139,33 +139,45 @@ function VoiceAssistantUI() {
         initVapi();
     }, []);
 
-    const toggleCall = () => {
+    const toggleCall = async () => {
+        console.log("toggleCall: Triggered");
+
+        if (isConnecting) {
+            console.log("toggleCall: Already connecting, ignoring.");
+            return;
+        }
+
         if (!vapi) {
-            console.warn("Voice service initializing...");
+            console.warn("toggleCall: Voice service not initialized");
             setConnectionError("جاري تهيئة الخدمة الصوتية...");
             return;
         }
 
         if (!config.assistantId) {
-            console.error("Missing ASSISTANT_ID in configuration");
+            console.error("toggleCall: Missing ASSISTANT_ID in configuration");
             setConnectionError("لم يتم العثور على معرف المساعد");
             return;
         }
 
         if (isActive) {
+            console.log("toggleCall: Stopping call");
             vapi.stop();
         } else {
+            console.log("toggleCall: Starting call");
             setIsConnecting(true);
-            vapi.start(config.assistantId)
-                .catch((e) => {
-                    console.error("Call start error:", e);
-                    if (e.message?.includes('permission') || e.name === 'NotAllowedError') {
-                        setConnectionError("يرجى السماح بالوصول للميكروفون للمتابعة");
-                    } else {
-                        setConnectionError("حدث خطأ أثناء بدء المكالمة");
-                    }
-                    setIsConnecting(false);
-                });
+            setConnectionError(null); // Clear previous errors
+            try {
+                await vapi.start(config.assistantId);
+                console.log("toggleCall: Call started command sent");
+            } catch (e) {
+                console.error("Call start error:", e);
+                if (e.message?.includes('permission') || e.name === 'NotAllowedError') {
+                    setConnectionError("يرجى السماح بالوصول للميكروفون للمتابعة");
+                } else {
+                    setConnectionError("حدث خطأ أثناء بدء المكالمة: " + (e.message || "Unknown error"));
+                }
+                setIsConnecting(false);
+            }
         }
     };
 
@@ -249,12 +261,12 @@ function VoiceAssistantUI() {
                         aria-label="تنشيط المساعد الصوتي"
                         className="voice-orb"
                         onClick={toggleCall}
-                        onTouchEnd={(e) => { e.preventDefault(); toggleCall(); }}
                         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleCall(); } }}
                         style={{
                             cursor: 'pointer',
                             outline: 'none',
-                            animationDuration: isActive ? '2s, 3s, 2s' : '8s, 6s, 4s'
+                            animationDuration: isActive ? '2s, 3s, 2s' : '8s, 6s, 4s',
+                            touchAction: 'manipulation'
                         }}
                         whileHover={{ scale: 1.08, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } }}
                         whileTap={{ scale: 0.96 }}
