@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 import Vapi from '@vapi-ai/web';
 import { getRemoteMaintenanceStatus } from './maintenance';
-import config from './config';
+import config, { lowLatencyConfig } from './config';
 import './styles.css';
 import './pages.css';
 
@@ -207,7 +207,7 @@ function DemoPage() {
                 setCallState('connecting');
                 setStatus('جاري الاتصال...');
                 console.log("Demo: Starting call with Assistant ID:", config.assistantId);
-                vapi.start(config.assistantId);
+                vapi.start(config.assistantId, lowLatencyConfig);
             } catch (err) {
                 console.error("Microphone permission denied or error:", err);
                 setStatus("يرجى السماح بالوصول للميكروفون");
