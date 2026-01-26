@@ -246,7 +246,7 @@ function DemoPage() {
                     >
                         <a href="index.html" className="nav-link">الرئيسية</a>
                         <a href="about.html" className="nav-link">حول</a>
-                        <a href="demo.html" className="nav-link active">تجربة</a>
+                        <a href="demo.html" className="nav-link active" aria-current="page">تجربة</a>
                     </motion.div>
                 </div>
             </nav>
