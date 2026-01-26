@@ -141,6 +141,8 @@ function VoiceAssistantUI() {
     }, []);
 
     const toggleCall = async () => {
+        if (isConnecting) return;
+
         setIsConnecting(true); // نوضح للمستخدم أننا نتأكد من الحالة
         try {
             const maintenance = await getRemoteMaintenanceStatus();
@@ -152,24 +154,27 @@ function VoiceAssistantUI() {
         } catch (e) {
             console.error("Maintenance check failed, proceeding with caution.");
         }
-        setIsConnecting(false);
 
         if (!vapi) {
             console.warn("Voice service initializing...");
             setConnectionError("جاري تهيئة الخدمة الصوتية...");
+            setIsConnecting(false);
             return;
         }
 
         if (!config.assistantId) {
             console.error("Missing ASSISTANT_ID in configuration");
             setConnectionError("لم يتم العثور على معرف المساعد");
+            setIsConnecting(false);
             return;
         }
 
         if (isActive) {
             vapi.stop();
+            // Allow re-toggling immediately after stop command
+            setIsConnecting(false);
         } else {
-            setIsConnecting(true);
+            // Keep isConnecting=true until call-start event or error
             console.log("Starting call with Assistant ID:", config.assistantId);
             vapi.start(config.assistantId)
                 .catch((e) => {
@@ -264,7 +269,6 @@ function VoiceAssistantUI() {
                         aria-label="تنشيط المساعد الصوتي"
                         className="voice-orb"
                         onClick={toggleCall}
-                        onTouchEnd={(e) => { e.preventDefault(); toggleCall(); }}
                         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleCall(); } }}
                         style={{
                             cursor: 'pointer',
