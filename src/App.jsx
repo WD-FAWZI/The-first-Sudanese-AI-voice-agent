@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import Vapi from '@vapi-ai/web';
 import { getRemoteMaintenanceStatus } from './maintenance';
-import config from './config';
+import config, { lowLatencyConfig } from './config';
 import './styles.css';
 import './pages.css';
 
@@ -171,7 +171,7 @@ function VoiceAssistantUI() {
         } else {
             setIsConnecting(true);
             console.log("Starting call with Assistant ID:", config.assistantId);
-            vapi.start(config.assistantId)
+            vapi.start(config.assistantId, lowLatencyConfig)
                 .catch((e) => {
                     console.error("Call start error:", e);
                     if (e.message?.includes('permission') || e.name === 'NotAllowedError') {

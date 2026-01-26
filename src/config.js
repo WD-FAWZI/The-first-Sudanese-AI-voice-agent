@@ -10,6 +10,29 @@ const config = {
     apiBaseUrl: 'https://api.vapi.ai',
 };
 
+// Low-latency configuration overrides
+// This configuration overrides the assistant's default settings to optimize for speed.
+export const lowLatencyConfig = {
+    transcriber: {
+        provider: "deepgram",
+        model: "nova-2",
+        language: "ar",
+    },
+    model: {
+        provider: "openai",
+        model: "gpt-4o-mini",
+    },
+    // Voice optimization requires a specific voiceId.
+    // Uncomment and add your voiceId if you want to enforce the turbo model.
+    /*
+    voice: {
+        provider: "11labs",
+        model: "eleven_turbo_v2_5",
+        voiceId: "YOUR_VOICE_ID_HERE",
+    },
+    */
+};
+
 // Strict check for Production Keys
 if (!config.publicKey || !config.assistantId) {
     console.error(
