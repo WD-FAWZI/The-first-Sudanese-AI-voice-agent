@@ -11,7 +11,7 @@ import './pages.css';
 // ═══════════════════════════════════════════════════════════════════════════
 
 const MicrophoneIcon = () => (
-    <svg className="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+    <svg aria-hidden="true" className="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
         <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
         <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
         <line x1="12" y1="19" x2="12" y2="23" />
@@ -234,7 +234,7 @@ function VoiceAssistantUI() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
                     >
-                        <a href="index.html" className="nav-link active">الرئيسية</a>
+                        <a href="index.html" className="nav-link active" aria-current="page">الرئيسية</a>
                         <a href="about.html" className="nav-link">حول</a>
                         <a href="demo.html" className="nav-link">تجربة</a>
                     </motion.div>
@@ -261,7 +261,9 @@ function VoiceAssistantUI() {
                     <motion.div
                         role="button"
                         tabIndex="0"
-                        aria-label="تنشيط المساعد الصوتي"
+                        aria-label={isActive ? "إيقاف المساعد الصوتي" : (isConnecting ? "جاري الاتصال..." : "تنشيط المساعد الصوتي")}
+                        aria-pressed={isActive}
+                        aria-busy={isConnecting}
                         className="voice-orb"
                         onClick={toggleCall}
                         onTouchEnd={(e) => { e.preventDefault(); toggleCall(); }}
