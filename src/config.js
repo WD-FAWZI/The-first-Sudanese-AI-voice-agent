@@ -20,4 +20,21 @@ if (!config.publicKey || !config.assistantId) {
     // console.log("✅ Vapi Configuration Loaded");
 }
 
+export const lowLatencyConfig = {
+    transcriber: {
+        provider: "deepgram",
+        model: "nova-2",
+        language: "ar"
+    },
+    model: {
+        provider: "openai",
+        model: "gpt-4o-mini"
+    },
+    // voice: {
+    //     provider: "11labs",
+    //     voiceId: "YOUR_VOICE_ID_HERE",
+    //     model: "eleven_turbo_v2_5"
+    // }
+};
+
 export default config;
