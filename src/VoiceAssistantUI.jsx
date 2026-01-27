@@ -117,7 +117,10 @@ function VoiceAssistantUI() {
                     setIsActive(true);
                     setIsConnecting(false);
                 });
-                vapiInstance.on('call-end', () => setIsActive(false));
+                vapiInstance.on('call-end', () => {
+                    setIsActive(false);
+                    setIsConnecting(false);
+                });
                 vapiInstance.on('error', (e) => {
                     console.error("Vapi Error:", e);
                     setIsActive(false);
@@ -141,6 +144,7 @@ function VoiceAssistantUI() {
     }, []);
 
     const toggleCall = async () => {
+        if (isConnecting) return;
         setIsConnecting(true); // نوضح للمستخدم أننا نتأكد من الحالة
         try {
             const maintenance = await getRemoteMaintenanceStatus();
@@ -152,24 +156,24 @@ function VoiceAssistantUI() {
         } catch (e) {
             console.error("Maintenance check failed, proceeding with caution.");
         }
-        setIsConnecting(false);
 
         if (!vapi) {
             console.warn("Voice service initializing...");
             setConnectionError("جاري تهيئة الخدمة الصوتية...");
+            setIsConnecting(false);
             return;
         }
 
         if (!config.assistantId) {
             console.error("Missing ASSISTANT_ID in configuration");
             setConnectionError("لم يتم العثور على معرف المساعد");
+            setIsConnecting(false);
             return;
         }
 
         if (isActive) {
             vapi.stop();
         } else {
-            setIsConnecting(true);
             console.log("Starting call with Assistant ID:", config.assistantId);
             vapi.start(config.assistantId)
                 .catch((e) => {
@@ -264,11 +268,11 @@ function VoiceAssistantUI() {
                         aria-label="تنشيط المساعد الصوتي"
                         className="voice-orb"
                         onClick={toggleCall}
-                        onTouchEnd={(e) => { e.preventDefault(); toggleCall(); }}
                         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleCall(); } }}
                         style={{
                             cursor: 'pointer',
                             outline: 'none',
+                            touchAction: 'manipulation',
                             animationDuration: isActive ? '2s, 3s, 2s' : '8s, 6s, 4s'
                         }}
                         whileHover={{ scale: 1.08, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } }}
