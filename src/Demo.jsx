@@ -207,7 +207,7 @@ function DemoPage() {
                 setCallState('connecting');
                 setStatus('جاري الاتصال...');
                 console.log("Demo: Starting call with Assistant ID:", config.assistantId);
-                vapi.start(config.assistantId);
+                vapi.start(config.assistantId, config.lowLatencyConfig);
             } catch (err) {
                 console.error("Microphone permission denied or error:", err);
                 setStatus("يرجى السماح بالوصول للميكروفون");
