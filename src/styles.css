@@ -235,6 +235,7 @@ body {
         orbGradient 6s ease-in-out infinite,
         orbBreath 4s ease-in-out infinite;
     cursor: pointer;
+    touch-action: manipulation;
     transition: box-shadow 0.4s var(--ease-out-expo);
 }
 

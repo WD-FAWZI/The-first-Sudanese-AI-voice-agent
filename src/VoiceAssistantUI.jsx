@@ -152,17 +152,18 @@ function VoiceAssistantUI() {
         } catch (e) {
             console.error("Maintenance check failed, proceeding with caution.");
         }
-        setIsConnecting(false);
 
         if (!vapi) {
             console.warn("Voice service initializing...");
             setConnectionError("جاري تهيئة الخدمة الصوتية...");
+            setIsConnecting(false);
             return;
         }
 
         if (!config.assistantId) {
             console.error("Missing ASSISTANT_ID in configuration");
             setConnectionError("لم يتم العثور على معرف المساعد");
+            setIsConnecting(false);
             return;
         }
 
@@ -264,7 +265,6 @@ function VoiceAssistantUI() {
                         aria-label="تنشيط المساعد الصوتي"
                         className="voice-orb"
                         onClick={toggleCall}
-                        onTouchEnd={(e) => { e.preventDefault(); toggleCall(); }}
                         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleCall(); } }}
                         style={{
                             cursor: 'pointer',
