@@ -26,6 +26,7 @@ const ModelSelector = ({ assistant, onUpdate }) => {
         { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash' },
         { id: 'meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo', name: 'Llama 3.1 405B' },
         { id: 'meta-llama/Meta-Llama-3-70b-Instruct', name: 'Llama 3 70B' },
+        { id: 'llama-3.3-70b-versatile', name: 'Llama 3.3 70B (Groq)' },
     ];
 
     return (

@@ -11,6 +11,9 @@ const AdminDashboard = ({ adminPassword }) => {
     const [error, setError] = useState(null);
     const [activeTab, setActiveTab] = useState('settings'); // 'settings' or 'logs'
 
+    // Micro-interaction for refresh
+    const [isRefreshing, setIsRefreshing] = useState(false);
+
     const fetchAssistant = async () => {
         try {
             const res = await fetch('/api/vapi-proxy?type=assistant', {
@@ -38,7 +41,11 @@ const AdminDashboard = ({ adminPassword }) => {
     };
 
     useEffect(() => {
-        Promise.all([fetchAssistant(), fetchLogs()]).finally(() => setLoading(false));
+        setIsRefreshing(true);
+        Promise.all([fetchAssistant(), fetchLogs()]).finally(() => {
+            setLoading(false);
+            setTimeout(() => setIsRefreshing(false), 500);
+        });
     }, [adminPassword]);
 
     const handleUpdateAssistant = async (updates) => {
@@ -67,46 +74,39 @@ const AdminDashboard = ({ adminPassword }) => {
     if (error) return <div style={{ color: 'red', padding: '2rem' }}>Error: {error}</div>;
 
     return (
-        <div style={{ padding: '2rem', color: 'white', maxWidth: '1200px', margin: '0 auto' }}>
-            <header style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2rem', alignItems: 'center' }}>
-                <h1>Admin Dashboard</h1>
-                <div style={{ display: 'flex', gap: '1rem' }}>
+        <div className="admin-container">
+            <header className="admin-header">
+                <div>
+                    <h1>CONTROL CENTER</h1>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>STATUS: {loading ? 'SYNCING...' : 'ONLINE'}</p>
+                </div>
+                <div className="admin-tabs">
                     <button
                         onClick={() => setActiveTab('settings')}
-                        style={{
-                            padding: '10px 20px',
-                            background: activeTab === 'settings' ? '#0070f3' : '#333',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '6px',
-                            cursor: 'pointer'
-                        }}
+                        className={`admin-tab ${activeTab === 'settings' ? 'active' : ''}`}
                     >
-                        Settings
+                        SETTINGS
                     </button>
                     <button
                         onClick={() => { setActiveTab('logs'); fetchLogs(); }}
-                        style={{
-                            padding: '10px 20px',
-                            background: activeTab === 'logs' ? '#0070f3' : '#333',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '6px',
-                            cursor: 'pointer'
-                        }}
+                        className={`admin-tab ${activeTab === 'logs' ? 'active' : ''}`}
                     >
-                        Call Logs
+                        LOGS
                     </button>
                 </div>
             </header>
 
             {activeTab === 'settings' ? (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '2rem' }}>
-                    <div style={{ gridColumn: '1 / -1' }}>
+                <div className="control-panel-grid">
+                    <div className="full-width">
                         <PromptEditor assistant={assistant} onUpdate={handleUpdateAssistant} />
                     </div>
-                    <VoiceControls assistant={assistant} onUpdate={handleUpdateAssistant} />
-                    <ModelSelector assistant={assistant} onUpdate={handleUpdateAssistant} />
+                    <div className="half-width">
+                        <VoiceControls assistant={assistant} onUpdate={handleUpdateAssistant} />
+                    </div>
+                    <div className="half-width">
+                        <ModelSelector assistant={assistant} onUpdate={handleUpdateAssistant} />
+                    </div>
                 </div>
             ) : (
                 <CallLogs logs={logs} onRefresh={fetchLogs} />

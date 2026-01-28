@@ -1,0 +1,171 @@
+/* Admin Control Center Styles */
+
+.admin-wrapper {
+    min-height: 100vh;
+    background: var(--void-pure);
+    position: relative;
+    z-index: 10;
+}
+
+.admin-container {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--neon-whisper);
+}
+
+.admin-header h1 {
+    font-size: 2rem;
+    color: var(--nubian-gold);
+    text-shadow: 0 0 15px var(--neon-whisper);
+}
+
+.admin-tabs {
+    display: flex;
+    gap: 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 5px;
+    border-radius: 8px;
+    border: 1px solid var(--neon-ghost);
+}
+
+.admin-tab {
+    padding: 10px 20px;
+    background: transparent;
+    color: var(--text-secondary);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.admin-tab.active {
+    background: var(--neon-ghost);
+    color: var(--neon-primary);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--neon-dim);
+}
+
+.control-panel-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 1.5rem;
+}
+
+.full-width {
+    grid-column: span 12;
+}
+
+.half-width {
+    grid-column: span 6;
+}
+
+@media (max-width: 1024px) {
+    .half-width {
+        grid-column: span 12;
+    }
+}
+
+.control-card {
+    background: rgba(15, 15, 20, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--neon-ghost);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.control-card:hover {
+    border-color: var(--neon-subtle);
+    transform: translateY(-2px);
+}
+
+.control-card h3 {
+    color: var(--desert-sand);
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 0.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.input-dark,
+.textarea-dark {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--neon-ghost);
+    color: var(--text-primary);
+    padding: 12px;
+    border-radius: 8px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.input-dark:focus,
+.textarea-dark:focus {
+    outline: none;
+    border-color: var(--neon-primary);
+    box-shadow: 0 0 15px var(--neon-ghost);
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.btn-admin {
+    background: var(--neon-dim);
+    border: none;
+    color: #000;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-admin:hover {
+    background: var(--neon-primary);
+    box-shadow: 0 0 20px var(--neon-subtle);
+}
+
+.btn-admin-save {
+    background: var(--nubian-gold);
+    color: #000;
+}
+
+.login-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--void-pure);
+    z-index: 100;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 400px;
+    background: rgba(20, 20, 20, 0.9);
+    border: 1px solid var(--neon-dim);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+    text-align: center;
+}

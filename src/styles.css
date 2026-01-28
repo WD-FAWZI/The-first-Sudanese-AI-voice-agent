@@ -37,19 +37,29 @@
     --void-surface: #0a0a0c;
 
     /* ─────────────────────────────────────────────────────────────────────────
-       THE LIGHT - Monochromatic Cyan Spectrum
+       THE LIGHT - Sudanese Cyberpunk Spectrum
        ───────────────────────────────────────────────────────────────────────── */
-    --neon-primary: #00F5FF;
-    --neon-bright: #67FFFF;
-    --neon-dim: rgba(0, 245, 255, 0.7);
-    --neon-subtle: rgba(0, 245, 255, 0.4);
-    --neon-whisper: rgba(0, 245, 255, 0.15);
-    --neon-ghost: rgba(0, 245, 255, 0.05);
+    --nubian-gold: #D4AF37;
+    --nubian-bright: #FFD700;
+    --nile-teal: #008080;
+    --nile-neon: #00E5FF;
+    --desert-sand: #EDC9AF;
+
+    --neon-primary: var(--nubian-gold);
+    --neon-bright: var(--nubian-bright);
+    --neon-dim: rgba(212, 175, 55, 0.7);
+    --neon-subtle: rgba(212, 175, 55, 0.4);
+    --neon-whisper: rgba(212, 175, 55, 0.15);
+    --neon-ghost: rgba(212, 175, 55, 0.05);
+
+    /* Secondary Accents (Nile Teal) */
+    --accent-teal: var(--nile-neon);
+    --accent-teal-dim: rgba(0, 229, 255, 0.7);
 
     /* Glow Effects */
-    --glow-intense: 0 0 30px rgba(0, 245, 255, 0.6), 0 0 60px rgba(0, 245, 255, 0.3);
-    --glow-soft: 0 0 20px rgba(0, 245, 255, 0.3), 0 0 40px rgba(0, 245, 255, 0.15);
-    --glow-subtle: 0 0 15px rgba(0, 245, 255, 0.2);
+    --glow-intense: 0 0 30px rgba(212, 175, 55, 0.6), 0 0 60px rgba(212, 175, 55, 0.3);
+    --glow-soft: 0 0 20px rgba(212, 175, 55, 0.3), 0 0 40px rgba(212, 175, 55, 0.15);
+    --glow-subtle: 0 0 15px rgba(212, 175, 55, 0.2);
 
     /* ─────────────────────────────────────────────────────────────────────────
        TEXT HIERARCHY

@@ -3,6 +3,7 @@ import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import Vapi from '@vapi-ai/web';
 import { getRemoteMaintenanceStatus } from './maintenance';
 import config from './config';
+import VoiceBlob from './components/VoiceBlob';
 import './styles.css';
 import './pages.css';
 
@@ -78,6 +79,7 @@ function VoiceAssistantUI() {
     const [vapi, setVapi] = useState(null);
     const [connectionError, setConnectionError] = useState(null);
     const [isConnecting, setIsConnecting] = useState(false);
+    const [volume, setVolume] = useState(0);
 
     useEffect(() => {
         const handleMove = (e) => {
@@ -117,7 +119,11 @@ function VoiceAssistantUI() {
                     setIsActive(true);
                     setIsConnecting(false);
                 });
-                vapiInstance.on('call-end', () => setIsActive(false));
+                vapiInstance.on('volume-level', (v) => setVolume(v));
+                vapiInstance.on('call-end', () => {
+                    setIsActive(false);
+                    setVolume(0);
+                });
                 vapiInstance.on('error', (e) => {
                     console.error("Vapi Error:", e);
                     setIsActive(false);
@@ -262,19 +268,22 @@ function VoiceAssistantUI() {
                         role="button"
                         tabIndex="0"
                         aria-label="تنشيط المساعد الصوتي"
-                        className="voice-orb"
+                        className="voice-blob-wrapper"
                         onClick={toggleCall}
                         onTouchEnd={(e) => { e.preventDefault(); toggleCall(); }}
                         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleCall(); } }}
                         style={{
                             cursor: 'pointer',
                             outline: 'none',
-                            animationDuration: isActive ? '2s, 3s, 2s' : '8s, 6s, 4s'
+                            width: '300px',
+                            height: '300px',
+                            position: 'relative'
                         }}
-                        whileHover={{ scale: 1.08, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } }}
+                        whileHover={{ scale: 1.05, transition: { duration: 0.4 } }}
                         whileTap={{ scale: 0.96 }}
-                        whileFocus={{ boxShadow: "0 0 60px rgba(0, 245, 255, 0.7), 0 0 120px rgba(0, 245, 255, 0.4)" }}
-                    />
+                    >
+                        <VoiceBlob volume={volume} isActive={isActive || isConnecting} />
+                    </motion.div>
 
                     <motion.h1
                         initial={{ opacity: 0, y: 25 }}

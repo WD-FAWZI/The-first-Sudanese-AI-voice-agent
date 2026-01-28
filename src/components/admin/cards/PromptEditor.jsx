@@ -2,14 +2,18 @@ import React, { useState, useEffect } from 'react';
 
 const PromptEditor = ({ assistant, onUpdate }) => {
     const [prompt, setPrompt] = useState('');
+    const [firstMessage, setFirstMessage] = useState('');
 
     useEffect(() => {
         if (assistant?.model?.messages) {
             const systemMessage = assistant.model.messages.find(m => m.role === 'system');
             if (systemMessage) setPrompt(systemMessage.content);
         } else if (assistant?.model?.systemPrompt) {
-            // Fallback for some Vapi models
             setPrompt(assistant.model.systemPrompt);
+        }
+
+        if (assistant?.firstMessage) {
+            setFirstMessage(assistant.firstMessage);
         }
     }, [assistant]);
 
@@ -29,45 +33,44 @@ const PromptEditor = ({ assistant, onUpdate }) => {
             updatedModel.systemPrompt = prompt;
         }
 
-        onUpdate({ model: updatedModel });
+        onUpdate({
+            model: updatedModel,
+            firstMessage: firstMessage
+        });
     };
 
     return (
-        <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1.5rem', borderRadius: '12px', border: '1px solid #333' }}>
-            <h3 style={{ marginTop: 0 }}>System Prompt</h3>
-            <textarea
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                style={{
-                    width: '100%',
-                    height: '200px',
-                    background: '#111',
-                    color: '#eee',
-                    border: '1px solid #444',
-                    borderRadius: '8px',
-                    padding: '1rem',
-                    fontFamily: 'monospace',
-                    fontSize: '14px',
-                    marginBottom: '1rem',
-                    resize: 'vertical'
-                }}
-            />
-            <button
-                onClick={handleSave}
-                style={{
-                    background: '#28a745',
-                    color: 'white',
-                    border: 'none',
-                    padding: '10px 20px',
-                    borderRadius: '6px',
-                    cursor: 'pointer',
-                    fontWeight: 'bold',
-                    float: 'right'
-                }}
-            >
-                Save Prompt
-            </button>
-            <div style={{ clear: 'both' }}></div>
+
+        <div className="control-card">
+            <h3>System Prompt</h3>
+            <div className="form-group">
+                <textarea
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
+                    className="textarea-dark"
+                    style={{ height: '200px', resize: 'vertical' }}
+                />
+            </div>
+
+            <h3>First Message</h3>
+            <p className="form-label">The initial greeting the assistant says when the call starts.</p>
+            <div className="form-group">
+                <textarea
+                    value={firstMessage}
+                    onChange={(e) => setFirstMessage(e.target.value)}
+                    className="textarea-dark"
+                    style={{ height: '100px', resize: 'vertical' }}
+                />
+            </div>
+
+            <div style={{ textAlign: 'right', marginTop: '1rem' }}>
+                <button
+                    onClick={handleSave}
+                    className="btn-admin btn-admin-save"
+                >
+                    SAVE PROMPT
+                </button>
+            </div>
         </div>
     );
 };
