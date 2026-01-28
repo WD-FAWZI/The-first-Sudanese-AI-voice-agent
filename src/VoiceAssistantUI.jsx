@@ -198,7 +198,7 @@ function VoiceAssistantUI() {
     ];
 
     return (
-        <div className="container">
+        <div className="container" data-testid="voice-assistant-container">
             {connectionError && (
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
@@ -217,6 +217,7 @@ function VoiceAssistantUI() {
                         boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
                         direction: 'rtl'
                     }}
+                    data-testid="connection-error-banner"
                 >
                     ⚠️ {connectionError}
                 </motion.div>
@@ -231,6 +232,7 @@ function VoiceAssistantUI() {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                        data-testid="app-logo"
                     >
                         <MicrophoneIcon />
                         <span>الوكيل الصوتي</span>
@@ -241,9 +243,9 @@ function VoiceAssistantUI() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
                     >
-                        <Link to="/" className="nav-link active">الرئيسية</Link>
-                        <Link to="/about" className="nav-link">حول</Link>
-                        <Link to="/demo" className="nav-link">تجربة</Link>
+                        <Link to="/" className="nav-link active" data-testid="nav-home">الرئيسية</Link>
+                        <Link to="/about" className="nav-link" data-testid="nav-about">حول</Link>
+                        <Link to="/demo" className="nav-link" data-testid="nav-demo">تجربة</Link>
                     </motion.div>
                 </div>
             </nav>
@@ -256,6 +258,7 @@ function VoiceAssistantUI() {
                     translateX: "-50%",
                     translateY: "-50%"
                 }}
+                data-testid="cursor-glow"
             />
 
             <main className="hero">
@@ -282,6 +285,7 @@ function VoiceAssistantUI() {
                         }}
                         whileHover={{ scale: 1.05, transition: { duration: 0.4 } }}
                         whileTap={{ scale: 0.96 }}
+                        data-testid="voice-orb"
                     >
                         <VoiceBlob volume={volume} isActive={isActive || isConnecting} />
                     </motion.div>
@@ -290,6 +294,7 @@ function VoiceAssistantUI() {
                         initial={{ opacity: 0, y: 25 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                        data-testid="hero-title"
                     >
                         {isActive ? "جاري الاستماع..." : (isConnecting ? "جاري الاتصال..." : "كيف يمكنني مساعدتك اليوم؟")}
                     </motion.h1>
@@ -298,6 +303,7 @@ function VoiceAssistantUI() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.5, duration: 0.8 }}
+                        data-testid="hero-subtitle"
                     >
                         الوكيل الصوتي الذكي الخاص بك
                     </motion.p>
@@ -309,6 +315,7 @@ function VoiceAssistantUI() {
                 initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                data-testid="features-section"
             >
                 {features.map((feature, index) => (
                     <motion.div
@@ -319,6 +326,7 @@ function VoiceAssistantUI() {
                         transition={{ delay: 0.8 + index * 0.1, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                         whileHover={{ y: -8, transition: { duration: 0.3 } }}
                         whileTap={{ scale: 0.98 }}
+                        data-testid={`feature-card-${feature.id}`}
                     >
                         <h3>{feature.title}</h3>
                         <p>{feature.description}</p>

@@ -1,20 +1,25 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import VoiceAssistantUI from './VoiceAssistantUI';
-import AboutPage from './About';
-import DemoPage from './Demo';
-import AdminLayout from './components/admin/AdminLayout';
+import { Routes, Route } from 'react-router-dom';
+
+// استيراد الصفحات
+// استيراد الصفحات
+import VoiceAssistantUI from './VoiceAssistantUI'; // الصفحة الرئيسية
+import DemoPage from './Demo'; // صفحة التجربة
+import AboutPage from './About'; // صفحة حول
 
 function App() {
     return (
-        <Router>
+        <div className="app">
+            {/* منطقة التبديل بين الصفحات */}
             <Routes>
                 <Route path="/" element={<VoiceAssistantUI />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/demo" element={<DemoPage />} />
-                <Route path="/admin" element={<AdminLayout />} />
+
+                {/* صفحة افتراضية لأي رابط خطأ */}
+                <Route path="*" element={<VoiceAssistantUI />} />
             </Routes>
-        </Router>
+        </div>
     );
 }
 

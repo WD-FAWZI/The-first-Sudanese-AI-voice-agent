@@ -31,7 +31,7 @@ class ErrorBoundary extends Component {
                     padding: '20px'
                 }}>
                     <h1 style={{ color: '#ff4d4f' }}>عذراً، حدث خطأ ما</h1>
-                    <p style={{ color: '#aaa', marginBottom: '20px' }}>
+                    <p style={{ color: 'white', marginBottom: '20px' }}>
                         نواجه مشكلة بسيطة. يرجى محاولة تحديث الصفحة.
                     </p>
                     <button

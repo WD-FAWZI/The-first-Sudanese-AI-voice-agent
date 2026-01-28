@@ -10,7 +10,7 @@ const CallLogs = ({ logs, onRefresh }) => {
                     style={{
                         background: 'transparent',
                         border: '1px solid #555',
-                        color: '#ddd',
+                        color: 'white',
                         padding: '5px 10px',
                         borderRadius: '4px',
                         cursor: 'pointer'
@@ -21,7 +21,7 @@ const CallLogs = ({ logs, onRefresh }) => {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                {logs.length === 0 && <p style={{ color: '#888' }}>No calls found.</p>}
+                {logs.length === 0 && <p style={{ color: 'white' }}>No calls found.</p>}
 
                 {logs.map((call) => (
                     <div key={call.id} style={{
@@ -30,7 +30,7 @@ const CallLogs = ({ logs, onRefresh }) => {
                         borderRadius: '8px',
                         border: '1px solid #222'
                     }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', color: '#888', fontSize: '0.9rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', color: 'white', fontSize: '0.9rem' }}>
                             <span>{new Date(call.createdAt || call.startedAt).toLocaleString()}</span>
                             <span style={{
                                 color: call.status === 'ended' ? '#4caf50' : '#ff9800',
@@ -45,24 +45,24 @@ const CallLogs = ({ logs, onRefresh }) => {
                         </div>
 
                         {call.endedReason && (
-                            <div style={{ marginBottom: '0.5rem', color: call.endedReason.includes('error') ? '#ff4d4f' : '#ccc' }}>
+                            <div style={{ marginBottom: '0.5rem', color: call.endedReason.includes('error') ? '#ff4d4f' : 'white' }}>
                                 <strong>Reason:</strong> {call.endedReason}
                             </div>
                         )}
 
                         {call.analysis?.summary && (
-                            <div style={{ background: '#111', padding: '10px', borderRadius: '4px', fontSize: '0.9rem', color: '#ddd' }}>
+                            <div style={{ background: '#111', padding: '10px', borderRadius: '4px', fontSize: '0.9rem', color: 'white' }}>
                                 <strong>Summary:</strong> {call.analysis.summary}
                             </div>
                         )}
 
                         <details style={{ marginTop: '0.5rem', cursor: 'pointer' }}>
-                            <summary style={{ color: '#0070f3' }}>View Transcript</summary>
+                            <summary style={{ color: 'var(--nile-neon)', cursor: 'pointer' }}>View Transcript</summary>
                             <div style={{ marginTop: '1rem', maxHeight: '200px', overflowY: 'auto', background: '#000', padding: '10px', borderRadius: '4px' }}>
                                 {call.transcript ? (
                                     <p style={{ whiteSpace: 'pre-wrap', fontSize: '0.9rem', lineHeight: '1.5' }}>{call.transcript}</p>
                                 ) : (
-                                    <p style={{ color: '#666' }}>No transcript available.</p>
+                                    <p style={{ color: 'white' }}>No transcript available.</p>
                                 )}
                             </div>
                         </details>

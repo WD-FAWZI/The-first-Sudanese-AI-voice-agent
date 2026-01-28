@@ -71,7 +71,7 @@ const AdminDashboard = ({ adminPassword }) => {
     };
 
     if (loading && !assistant) return <div style={{ color: 'white', padding: '2rem' }}>Loading...</div>;
-    if (error) return <div style={{ color: 'red', padding: '2rem' }}>Error: {error}</div>;
+    if (error) return <div style={{ color: '#ff4d4f', padding: '2rem' }}>Error: {error}</div>;
 
     return (
         <div className="admin-container">

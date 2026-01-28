@@ -21,8 +21,6 @@ const InnerMagicSphere = ({ texture }) => {
     );
 };
 
-// تم حذف مكون MajesticAura (الهالة الذهبية) من هنا
-
 const PulsingLights = ({ volume, isActive }) => {
     const lightRef = useRef();
     const backLightRef = useRef();
@@ -86,7 +84,6 @@ const Blob = ({ volume = 0, isActive }) => {
                 <MeshTransmissionMaterial {...config} />
             </Sphere>
             <InnerMagicSphere texture={texture} />
-            {/* تم حذف استدعاء MajesticAura من هنا */}
         </group>
     );
 };
@@ -106,7 +103,14 @@ const VoiceBlob = ({ volume = 0, isActive = false }) => {
                     </Float>
                 </Suspense>
 
-                <ContactShadows position={[0, -1.6, 0]} opacity={0.5} scale={10} blur={2} far={4} color="#d4af37" />
+                <ContactShadows 
+                    position={[0, -1.5, 0]} 
+                    opacity={0.6} 
+                    scale={10} 
+                    blur={3} 
+                    far={1.5} 
+                    color="#d4af37" 
+                />
             </Canvas>
         </div>
     );

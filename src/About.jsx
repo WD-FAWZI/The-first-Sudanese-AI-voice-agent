@@ -41,7 +41,26 @@ const HiddenCirclesBackground = ({ smoothX, smoothY }) => {
                     <div className="circle"></div>
                     <div className="circle"></div>
                     <div className="circle"></div>
-                    <span className="depth-signature">~ Mohamed Fawzi ;)</span>
+                    {/* التعديل هنا: التوقيع مع الغمزة الواضحة بعد الاسم */}
+                    <span className="depth-signature" style={{
+                        fontFamily: 'monospace',
+                        letterSpacing: '1px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px'
+                    }}>
+                        ~ Mohamed Fawzi
+                        <span style={{
+                            color: '#FFD700', // لون ذهبي
+                            fontWeight: 'bold',
+                            fontSize: '1.4em', // تكبير الغمزة قليلاً
+                            transform: 'rotate(15deg)', // ميلان بسيط للحركة
+                            display: 'inline-block'
+                        }}>
+                            ;)
+                        </span>
+                    </span>
                 </div>
             </div>
         </div>

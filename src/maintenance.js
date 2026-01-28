@@ -1,25 +1,30 @@
-// Maintenance Remote Configuration
-// استبدل هذا الرابط برابط الـ Raw Gist الخاص بك
-const REMOTE_CONFIG_URL = "https://gist.githubusercontent.com/WD-FAWZI/6abe420aaae21a836fba9f92a90ffa30/raw/b99cdd01b01afe8840d40baf69b8fbee1b3fc10f/maintenance.json";
+import { supabase } from './lib/supabase';
 
 /**
- * Fetches the maintenance status from a remote URL.
+ * Fetches the maintenance status from Supabase 'settings' table.
  * @returns {Promise<{active: boolean, message: string}>}
  */
 export const getRemoteMaintenanceStatus = async () => {
     try {
-        // نستخدم cache: 'no-store' لضمان عدم تخزين الحالة القديمة في المتصفح
-        const response = await fetch(REMOTE_CONFIG_URL, { cache: 'no-store' });
-        if (!response.ok) throw new Error('Failed to fetch config');
-        return await response.json();
+        const { data, error } = await supabase
+            .from('settings')
+            .select('is_maintenance, maintenance_message')
+            .single();
+
+        if (error) throw error;
+
+        return {
+            active: !!data?.is_maintenance,
+            message: data?.maintenance_message || "الموقع تحت الصيانة حالياً. يرجى العودة لاحقاً."
+        };
     } catch (error) {
-        console.error("Error fetching maintenance status:", error);
-        // في حال فشل الاتصال بالرابط، نفترض أن الموقع يعمل (أو يمكنك عكس ذلك للأمان)
+        console.error("Error fetching maintenance status from Supabase:", error);
+        // في حال فشل الاتصال، نفترض أن الموقع يعمل
         return { active: false, message: "" };
     }
 };
 
-// الدوال القديمة سنبقيها متوافقة مع التعديل الجديد
+// الدوال القديمة ستبقى متوافقة
 export const isUnderMaintenance = async () => {
     const status = await getRemoteMaintenanceStatus();
     return status.active;
