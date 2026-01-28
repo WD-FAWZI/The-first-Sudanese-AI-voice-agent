@@ -269,22 +269,14 @@ function VoiceAssistantUI() {
                     className="assistant-wrapper"
                 >
                     <motion.div
-                        role="button"
-                        tabIndex="0"
-                        aria-label="تنشيط المساعد الصوتي"
                         className="voice-blob-wrapper"
-                        onClick={toggleCall}
-                        onTouchEnd={(e) => { e.preventDefault(); toggleCall(); }}
-                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleCall(); } }}
                         style={{
-                            cursor: 'pointer',
                             outline: 'none',
                             width: '300px',
                             height: '300px',
-                            position: 'relative'
+                            position: 'relative',
+                            pointerEvents: 'none'
                         }}
-                        whileHover={{ scale: 1.05, transition: { duration: 0.4 } }}
-                        whileTap={{ scale: 0.96 }}
                         data-testid="voice-orb"
                     >
                         <VoiceBlob volume={volume} isActive={isActive || isConnecting} />
