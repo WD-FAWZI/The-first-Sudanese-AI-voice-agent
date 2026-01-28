@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import Vapi from '@vapi-ai/web';
 import { getRemoteMaintenanceStatus } from './maintenance';
@@ -240,9 +241,9 @@ function VoiceAssistantUI() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
                     >
-                        <a href="index.html" className="nav-link active">الرئيسية</a>
-                        <a href="about.html" className="nav-link">حول</a>
-                        <a href="demo.html" className="nav-link">تجربة</a>
+                        <Link to="/" className="nav-link active">الرئيسية</Link>
+                        <Link to="/about" className="nav-link">حول</Link>
+                        <Link to="/demo" className="nav-link">تجربة</Link>
                     </motion.div>
                 </div>
             </nav>

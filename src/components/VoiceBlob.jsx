@@ -1,73 +1,112 @@
-import React, { useRef, useMemo, useEffect } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { Sphere, MeshDistortMaterial, Float, Environment } from '@react-three/drei';
+import React, { useRef, Suspense } from 'react';
+import { Canvas, useFrame, useLoader } from '@react-three/fiber';
+import { Sphere, Float, MeshTransmissionMaterial, ContactShadows } from '@react-three/drei';
 import * as THREE from 'three';
 
-const Blob = ({ volume = 0, isActive }) => {
-    const mesh = useRef();
-    const material = useRef();
+const InnerMagicSphere = ({ texture }) => {
+    texture.wrapS = THREE.MirroredRepeatWrapping;
+    texture.wrapT = THREE.MirroredRepeatWrapping;
+    texture.repeat.set(1, 1);
+    texture.anisotropy = 16;
 
-    // Base configuration
-    const baseColor = new THREE.Color("#D4AF37"); // Deep Nubian Gold
-    const activeColor = new THREE.Color("#FFD700"); // Bright Gold
-    const neonColor = new THREE.Color("#00E5FF"); // Nile Neon
+    return (
+        <mesh scale={[0.99, 0.99, 0.99]}>
+            <sphereGeometry args={[1, 64, 64]} />
+            <meshBasicMaterial 
+                map={texture} 
+                toneMapped={false} 
+                side={THREE.DoubleSide}
+            />
+        </mesh>
+    );
+};
+
+// تم حذف مكون MajesticAura (الهالة الذهبية) من هنا
+
+const PulsingLights = ({ volume, isActive }) => {
+    const lightRef = useRef();
+    const backLightRef = useRef();
 
     useFrame((state, delta) => {
-        if (!material.current || !mesh.current) return;
+        const targetIntensity = isActive ? 2 + (volume * 3) : 1.5;
+        if (lightRef.current) {
+            lightRef.current.intensity = THREE.MathUtils.lerp(lightRef.current.intensity, targetIntensity, delta * 5);
+        }
 
-        // Calculate targets based on state and volume
-        const targetDistort = isActive ? 0.4 + (volume * 0.6) : 0.3;
-        const targetSpeed = isActive ? 2 + (volume * 8) : 0.8;
-        const targetScale = isActive ? 1.8 + (volume * 0.4) : 1.5;
-
-        // Smoothly interpolate current values to targets
-        material.current.distort = THREE.MathUtils.lerp(material.current.distort, targetDistort, delta * 3);
-        material.current.speed = THREE.MathUtils.lerp(material.current.speed, targetSpeed, delta * 3);
-
-        // Scale pulse
-        const currentScale = mesh.current.scale.x;
-        const newScale = THREE.MathUtils.lerp(currentScale, targetScale, delta * 8);
-        mesh.current.scale.set(newScale, newScale, newScale);
-
-        // Color shifting based on volume intensity
-        if (isActive && volume > 0.1) {
-            // Mix gold with neon teal on high volume
-            material.current.color.lerpColors(activeColor, neonColor, volume * 0.5);
-        } else {
-            material.current.color.lerp(baseColor, delta * 2);
+        if (backLightRef.current) {
+            backLightRef.current.position.x = Math.sin(state.clock.elapsedTime) * 3;
         }
     });
 
     return (
-        <Sphere ref={mesh} args={[1, 100, 100]}>
-            <MeshDistortMaterial
-                ref={material}
-                color={baseColor}
-                attach="material"
-                distort={0.3}
-                speed={1.5}
-                roughness={0.1}
-                metalness={0.9} // Glassy metallic look
-                clearcoat={1}
-                clearcoatRoughness={0.1}
-                bumpScale={0.005}
-            />
-        </Sphere>
+        <group>
+            <pointLight ref={lightRef} position={[10, 10, 10]} color="#ffbd2e" distance={20} decay={2} />
+            <pointLight ref={backLightRef} position={[-5, -5, -10]} intensity={2} color="#0044ff" distance={20} />
+            <ambientLight intensity={0.5} />
+        </group>
+    );
+};
+
+const Blob = ({ volume = 0, isActive }) => {
+    const groupRef = useRef();
+    const texture = useLoader(THREE.TextureLoader, '/nile.png');
+
+    const config = {
+        backside: false,
+        samples: 8,
+        resolution: 512,
+        transmission: 1, 
+        roughness: 0,
+        thickness: 0.1,
+        ior: 1.15, 
+        chromaticAberration: 0.04,
+        anisotropy: 0.1,
+        distortion: 0.0,
+        distortionScale: 0.0,
+        temporalDistortion: 0.0,
+        color: '#fff9e6',
+        attenuationDistance: 0.5,
+        attenuationColor: '#ffd700',
+    };
+
+    useFrame((state, delta) => {
+        if (!groupRef.current) return;
+        
+        const targetScale = isActive ? 1.25 + (volume * 0.15) : 1.15;
+        const currentScale = groupRef.current.scale.x;
+        const newScale = THREE.MathUtils.lerp(currentScale, targetScale, delta * 5);
+        groupRef.current.scale.set(newScale, newScale, newScale);
+
+        groupRef.current.rotation.y += delta * 0.1;
+    });
+
+    return (
+        <group ref={groupRef}>
+            <Sphere args={[1, 64, 64]}>
+                <MeshTransmissionMaterial {...config} />
+            </Sphere>
+            <InnerMagicSphere texture={texture} />
+            {/* تم حذف استدعاء MajesticAura من هنا */}
+        </group>
     );
 };
 
 const VoiceBlob = ({ volume = 0, isActive = false }) => {
     return (
-        <div style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}>
-            <Canvas camera={{ position: [0, 0, 5], fov: 45 }} dpr={[1, 2]}> {/* dpr for crisp mobile rendering */}
-                <ambientLight intensity={0.4} />
-                <directionalLight position={[10, 10, 5]} intensity={1} color="#ffffff" />
-                <pointLight position={[-10, -5, -5]} intensity={2} color="#00E5FF" distance={20} />
-                <pointLight position={[5, 5, 5]} intensity={1} color="#FFD700" />
+        <div style={{ width: '100%', height: '100%', overflow: 'visible' }}>
+            <Canvas 
+                camera={{ position: [0, 0, 4.5], fov: 40 }} 
+                gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping }}
+            >
+                <PulsingLights volume={volume} isActive={isActive} />
+                
+                <Suspense fallback={null}>
+                    <Float speed={2} rotationIntensity={0.2} floatIntensity={0.5}>
+                        <Blob volume={volume} isActive={isActive} />
+                    </Float>
+                </Suspense>
 
-                <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.5}>
-                    <Blob volume={volume} isActive={isActive} />
-                </Float>
+                <ContactShadows position={[0, -1.6, 0]} opacity={0.5} scale={10} blur={2} far={4} color="#d4af37" />
             </Canvas>
         </div>
     );

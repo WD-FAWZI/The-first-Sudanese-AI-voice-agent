@@ -28,4 +28,4 @@ Before generating any code for a new project, you must enforce the following str
 When the user asks to "Start a new project named [X]":
 1. Create the folder structure prioritizing scalability (feature-based folders).
 2. Create a `STANDARDS.md` file in the root directory documenting the rules above.
-3. Setup the initial `layout.tsx` with proper metadata and SEO tags.
+3. Setup the initial `layout.tsx` with proper metadata and SEO tag
