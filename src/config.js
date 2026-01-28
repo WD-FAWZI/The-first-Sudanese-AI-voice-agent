@@ -8,6 +8,25 @@ const config = {
     publicKey: import.meta.env.VITE_VAPI_PUBLIC_KEY,
     assistantId: import.meta.env.VITE_VAPI_ASSISTANT_ID,
     apiBaseUrl: 'https://api.vapi.ai',
+
+    // Low Latency & Arabic Language Overrides
+    lowLatencyConfig: {
+        transcriber: {
+            provider: "deepgram",
+            model: "nova-2",
+            language: "ar"
+        },
+        model: {
+            provider: "openai",
+            model: "gpt-4o-mini"
+        },
+        // Voice override commented out as requested
+        // voice: {
+        //     provider: "11labs",
+        //     voiceId: "YOUR_VOICE_ID",
+        //     model: "eleven_turbo_v2_5"
+        // }
+    }
 };
 
 // Strict check for Production Keys
