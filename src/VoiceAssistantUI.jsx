@@ -140,6 +140,12 @@ function VoiceAssistantUI() {
         initVapi();
     }, []);
 
+    const getOrbLabel = () => {
+        if (isConnecting) return "جاري الاتصال بالمساعد الصوتي";
+        if (isActive) return "إيقاف المساعد الصوتي";
+        return "تنشيط المساعد الصوتي";
+    };
+
     const toggleCall = async () => {
         setIsConnecting(true); // نوضح للمستخدم أننا نتأكد من الحالة
         try {
@@ -261,7 +267,9 @@ function VoiceAssistantUI() {
                     <motion.div
                         role="button"
                         tabIndex="0"
-                        aria-label="تنشيط المساعد الصوتي"
+                        aria-label={getOrbLabel()}
+                        aria-pressed={isActive}
+                        aria-busy={isConnecting}
                         className="voice-orb"
                         onClick={toggleCall}
                         onTouchEnd={(e) => { e.preventDefault(); toggleCall(); }}
@@ -277,6 +285,7 @@ function VoiceAssistantUI() {
                     />
 
                     <motion.h1
+                        aria-live="polite"
                         initial={{ opacity: 0, y: 25 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}

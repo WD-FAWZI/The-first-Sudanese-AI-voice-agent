@@ -287,6 +287,7 @@ function DemoPage() {
 
                     <motion.p
                         className={`status-text ${callState === 'active' ? 'active' : ''} ${hasPermission === false ? 'error' : ''}`}
+                        aria-live="polite"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.5 }}
@@ -319,6 +320,7 @@ function DemoPage() {
                             onTouchEnd={(e) => { e.preventDefault(); toggleCall(); }}
                             whileHover={{ scale: 1.05, y: -3 }}
                             whileTap={{ scale: 0.95 }}
+                            aria-pressed={callState === 'active'}
                             disabled={callState === 'connecting' || !vapi}
                             style={{ opacity: (callState === 'connecting' || !vapi) ? 0.7 : 1, minWidth: '200px' }}
                         >
