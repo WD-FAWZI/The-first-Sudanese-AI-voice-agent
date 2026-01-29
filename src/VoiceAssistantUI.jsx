@@ -148,46 +148,56 @@ function VoiceAssistantUI() {
     }, []);
 
     const toggleCall = async () => {
+        if (isConnecting) return;
         setIsConnecting(true); // نوضح للمستخدم أننا نتأكد من الحالة
+
         try {
-            const maintenance = await getRemoteMaintenanceStatus();
-            if (maintenance.active) {
-                setConnectionError(maintenance.message);
+            // 1. Maintenance Check
+            try {
+                const maintenance = await getRemoteMaintenanceStatus();
+                if (maintenance.active) {
+                    setConnectionError(maintenance.message);
+                    setIsConnecting(false);
+                    return;
+                }
+            } catch (e) {
+                console.error("Maintenance check failed, proceeding with caution.");
+            }
+
+            // 2. Configuration & Initialization Check
+            if (!vapi) {
+                console.warn("Voice service initializing...");
+                setConnectionError("جاري تهيئة الخدمة الصوتية...");
                 setIsConnecting(false);
                 return;
             }
+
+            if (!config.assistantId) {
+                console.error("Missing ASSISTANT_ID in configuration");
+                setConnectionError("لم يتم العثور على معرف المساعد");
+                setIsConnecting(false);
+                return;
+            }
+
+            // 3. Toggle Call Action
+            if (isActive) {
+                vapi.stop();
+                // isConnecting will be reset by 'call-end' event or if we manually set it,
+                // but usually stop() is quick. Let's ensure state is clean.
+                setIsConnecting(false);
+            } else {
+                // Keep isConnecting = true until call-start or error
+                console.log("Starting call with Assistant ID:", config.assistantId);
+                await vapi.start(config.assistantId);
+            }
         } catch (e) {
-            console.error("Maintenance check failed, proceeding with caution.");
-        }
-        setIsConnecting(false);
-
-        if (!vapi) {
-            console.warn("Voice service initializing...");
-            setConnectionError("جاري تهيئة الخدمة الصوتية...");
-            return;
-        }
-
-        if (!config.assistantId) {
-            console.error("Missing ASSISTANT_ID in configuration");
-            setConnectionError("لم يتم العثور على معرف المساعد");
-            return;
-        }
-
-        if (isActive) {
-            vapi.stop();
-        } else {
-            setIsConnecting(true);
-            console.log("Starting call with Assistant ID:", config.assistantId);
-            vapi.start(config.assistantId)
-                .catch((e) => {
-                    console.error("Call start error:", e);
-                    if (e.message?.includes('permission') || e.name === 'NotAllowedError') {
-                        setConnectionError("يرجى السماح بالوصول للميكروفون للمتابعة");
-                    } else {
-                        setConnectionError("حدث خطأ أثناء بدء المكالمة");
-                    }
-                    setIsConnecting(false);
-                });
+            console.error("Call toggle error:", e);
+            if (e.message?.includes('permission') || e.name === 'NotAllowedError') {
+                setConnectionError("يرجى السماح بالوصول للميكروفون للمتابعة");
+            } else {
+                setConnectionError("حدث خطأ أثناء بدء المكالمة");
+            }
+            setIsConnecting(false);
         }
     };
 
@@ -275,9 +285,23 @@ function VoiceAssistantUI() {
                             width: '300px',
                             height: '300px',
                             position: 'relative',
-                            pointerEvents: 'none'
+                            pointerEvents: 'auto',
+                            cursor: 'pointer',
+                            touchAction: 'manipulation'
                         }}
                         data-testid="voice-orb"
+                        onClick={toggleCall}
+                        role="button"
+                        tabIndex={0}
+                        aria-pressed={isActive || isConnecting}
+                        aria-busy={isConnecting}
+                        aria-label={isActive ? "إنهاء المكالمة" : "بدء المكالمة"}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                toggleCall();
+                            }
+                        }}
                     >
                         <VoiceBlob volume={volume} isActive={isActive || isConnecting} />
                     </motion.div>
