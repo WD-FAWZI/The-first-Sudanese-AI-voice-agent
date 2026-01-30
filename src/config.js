@@ -10,6 +10,14 @@ const config = {
     apiBaseUrl: 'https://api.vapi.ai',
 };
 
+export const assistantOptions = {
+    transcriber: {
+        provider: "deepgram",
+        model: "nova-2",
+        language: import.meta.env.VITE_VAPI_LANGUAGE || "ar",
+    },
+};
+
 // Strict check for Production Keys
 if (!config.publicKey || !config.assistantId) {
     console.error(

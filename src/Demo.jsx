@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 import Vapi from '@vapi-ai/web';
 import { getRemoteMaintenanceStatus } from './maintenance';
-import config from './config';
+import config, { assistantOptions } from './config';
 import VoiceBlob from './components/VoiceBlob';
 import './styles.css';
 import './pages.css';
@@ -85,7 +85,7 @@ function DemoPage() {
         if (!vapi) { setStatus("خطأ في تهيئة الخدمة الصوتية"); return; }
         if (callState === 'active') { vapi.stop(); setStatus('جاري إنهاء المكالمة...'); } else {
             if (!config.assistantId) { setStatus("خطأ في معرف المساعد"); return; }
-            try { const stream = await navigator.mediaDevices.getUserMedia({ audio: true }); stream.getTracks().forEach(track => track.stop()); setCallState('connecting'); setStatus('جاري الاتصال...'); vapi.start(config.assistantId); } catch (err) { setStatus("يرجى السماح بالوصول للميكروفون"); }
+            try { const stream = await navigator.mediaDevices.getUserMedia({ audio: true }); stream.getTracks().forEach(track => track.stop()); setCallState('connecting'); setStatus('جاري الاتصال...'); vapi.start(config.assistantId, assistantOptions); } catch (err) { setStatus("يرجى السماح بالوصول للميكروفون"); }
         }
     };
 
