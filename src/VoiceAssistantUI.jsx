@@ -275,7 +275,19 @@ function VoiceAssistantUI() {
                             width: '300px',
                             height: '300px',
                             position: 'relative',
-                            pointerEvents: 'none'
+                            cursor: 'pointer',
+                            touchAction: 'manipulation'
+                        }}
+                        onClick={toggleCall}
+                        role="button"
+                        tabIndex={0}
+                        aria-label={isActive ? "إنهاء المحادثة" : "ابدأ المحادثة"}
+                        aria-pressed={isActive}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                toggleCall();
+                            }
                         }}
                         data-testid="voice-orb"
                     >
