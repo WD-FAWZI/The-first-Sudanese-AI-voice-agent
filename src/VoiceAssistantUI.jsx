@@ -270,14 +270,21 @@ function VoiceAssistantUI() {
                 >
                     <motion.div
                         className="voice-blob-wrapper"
+                        onClick={toggleCall}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') toggleCall(); }}
+                        role="button"
+                        tabIndex={0}
+                        aria-label={isActive ? "إنهاء المحادثة" : "ابدأ المحادثة"}
+                        aria-pressed={isActive}
                         style={{
-                            outline: 'none',
                             width: '300px',
                             height: '300px',
                             position: 'relative',
-                            pointerEvents: 'none'
+                            cursor: 'pointer'
                         }}
                         data-testid="voice-orb"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                     >
                         <VoiceBlob volume={volume} isActive={isActive || isConnecting} />
                     </motion.div>

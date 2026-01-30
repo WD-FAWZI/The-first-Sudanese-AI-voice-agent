@@ -773,3 +773,15 @@ p {
         transform: scaleY(1.1);
     }
 }
+/* ═══════════════════════════════════════════════════════════════════════════
+   ACCESSIBILITY
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.voice-blob-wrapper {
+    outline: none;
+    border-radius: 50%;
+}
+
+.voice-blob-wrapper:focus-visible {
+    box-shadow: 0 0 0 2px var(--void-pure), 0 0 0 4px var(--neon-primary), 0 0 15px var(--neon-bright);
+}
