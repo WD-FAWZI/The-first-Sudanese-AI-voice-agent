@@ -148,6 +148,7 @@ function VoiceAssistantUI() {
     }, []);
 
     const toggleCall = async () => {
+        if (isConnecting) return;
         setIsConnecting(true); // نوضح للمستخدم أننا نتأكد من الحالة
         try {
             const maintenance = await getRemoteMaintenanceStatus();
@@ -188,6 +189,13 @@ function VoiceAssistantUI() {
                     }
                     setIsConnecting(false);
                 });
+        }
+    };
+
+    const handleKeyDown = (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            toggleCall();
         }
     };
 
@@ -275,8 +283,14 @@ function VoiceAssistantUI() {
                             width: '300px',
                             height: '300px',
                             position: 'relative',
-                            pointerEvents: 'none'
+                            cursor: 'pointer'
                         }}
+                        onClick={toggleCall}
+                        onKeyDown={handleKeyDown}
+                        role="button"
+                        tabIndex={0}
+                        aria-pressed={isActive}
+                        aria-label={isActive ? 'إنهاء المحادثة' : (isConnecting ? 'جاري الاتصال' : 'بدأ المحادثة')}
                         data-testid="voice-orb"
                     >
                         <VoiceBlob volume={volume} isActive={isActive || isConnecting} />
