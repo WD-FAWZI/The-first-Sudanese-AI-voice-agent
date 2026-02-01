@@ -178,7 +178,7 @@ function VoiceAssistantUI() {
         } else {
             setIsConnecting(true);
             console.log("Starting call with Assistant ID:", config.assistantId);
-            vapi.start(config.assistantId)
+            vapi.start(config.assistantId, config.assistantOptions)
                 .catch((e) => {
                     console.error("Call start error:", e);
                     if (e.message?.includes('permission') || e.name === 'NotAllowedError') {
@@ -270,12 +270,18 @@ function VoiceAssistantUI() {
                 >
                     <motion.div
                         className="voice-blob-wrapper"
+                        onClick={toggleCall}
+                        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && toggleCall()}
+                        role="button"
+                        tabIndex={0}
+                        aria-pressed={isActive}
+                        aria-label={isActive ? "إنهاء المحادثة" : (isConnecting ? "جاري الاتصال" : "بدأ المحادثة")}
                         style={{
                             outline: 'none',
                             width: '300px',
                             height: '300px',
                             position: 'relative',
-                            pointerEvents: 'none'
+                            cursor: 'pointer'
                         }}
                         data-testid="voice-orb"
                     >
