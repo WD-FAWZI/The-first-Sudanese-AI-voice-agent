@@ -90,7 +90,7 @@ const Blob = ({ volume = 0, isActive }) => {
 
 const VoiceBlob = ({ volume = 0, isActive = false }) => {
     return (
-        <div style={{ width: '100%', height: '100%', overflow: 'visible' }}>
+        <div style={{ width: '100%', height: '100%', overflow: 'visible', pointerEvents: 'none' }}>
             <Canvas 
                 camera={{ position: [0, 0, 4.5], fov: 40 }} 
                 gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping }}
