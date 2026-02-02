@@ -275,9 +275,19 @@ function VoiceAssistantUI() {
                             width: '300px',
                             height: '300px',
                             position: 'relative',
-                            pointerEvents: 'none'
+                            cursor: 'pointer'
                         }}
                         data-testid="voice-orb"
+                        onClick={toggleCall}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                toggleCall();
+                            }
+                        }}
+                        role="button"
+                        tabIndex={0}
+                        aria-pressed={isActive || isConnecting}
+                        aria-label={isActive ? "إنهاء المحادثة" : (isConnecting ? "جاري الاتصال" : "بدأ المحادثة")}
                     >
                         <VoiceBlob volume={volume} isActive={isActive || isConnecting} />
                     </motion.div>
