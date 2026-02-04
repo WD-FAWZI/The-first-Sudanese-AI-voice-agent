@@ -197,6 +197,13 @@ function VoiceAssistantUI() {
         { id: 3, title: "تعلم مستمر", description: "يتحسن مع كل تفاعل" }
     ];
 
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggleCall();
+        }
+    };
+
     return (
         <div className="container" data-testid="voice-assistant-container">
             {connectionError && (
@@ -270,12 +277,19 @@ function VoiceAssistantUI() {
                 >
                     <motion.div
                         className="voice-blob-wrapper"
+                        onClick={toggleCall}
+                        onKeyDown={handleKeyDown}
+                        role="button"
+                        tabIndex={0}
+                        aria-label={isActive ? "إنهاء المحادثة" : (isConnecting ? "جاري الاتصال" : "بدأ المحادثة")}
+                        aria-pressed={isActive}
                         style={{
                             outline: 'none',
                             width: '300px',
                             height: '300px',
                             position: 'relative',
-                            pointerEvents: 'none'
+                            pointerEvents: 'auto',
+                            cursor: 'pointer'
                         }}
                         data-testid="voice-orb"
                     >
@@ -283,6 +297,7 @@ function VoiceAssistantUI() {
                     </motion.div>
 
                     <motion.h1
+                        aria-live="polite"
                         initial={{ opacity: 0, y: 25 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
