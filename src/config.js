@@ -8,6 +8,13 @@ const config = {
     publicKey: import.meta.env.VITE_VAPI_PUBLIC_KEY,
     assistantId: import.meta.env.VITE_VAPI_ASSISTANT_ID,
     apiBaseUrl: 'https://api.vapi.ai',
+    assistantOptions: {
+        transcriber: {
+            provider: "deepgram",
+            model: "nova-2",
+            language: "ar"
+        }
+    },
 };
 
 // Strict check for Production Keys
