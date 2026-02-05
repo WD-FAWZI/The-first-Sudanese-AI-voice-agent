@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 import './styles.css';
 import './pages.css';
@@ -131,6 +131,7 @@ const DevicesIcon = () => (
 // ═══════════════════════════════════════════════════════════════════════════
 
 function AboutPage() {
+    const location = useLocation();
     const mouseX = useMotionValue(0);
     const mouseY = useMotionValue(0);
 
@@ -203,9 +204,30 @@ function AboutPage() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
                     >
-                        <Link to="/" className="nav-link">الرئيسية</Link>
-                        <Link to="/about" className="nav-link active">حول</Link>
-                        <Link to="/demo" className="nav-link">تجربة</Link>
+                        <Link
+                            to="/"
+                            className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}
+                            aria-current={location.pathname === '/' ? 'page' : undefined}
+                            data-testid="nav-home"
+                        >
+                            الرئيسية
+                        </Link>
+                        <Link
+                            to="/about"
+                            className={`nav-link ${location.pathname === '/about' ? 'active' : ''}`}
+                            aria-current={location.pathname === '/about' ? 'page' : undefined}
+                            data-testid="nav-about"
+                        >
+                            حول
+                        </Link>
+                        <Link
+                            to="/demo"
+                            className={`nav-link ${location.pathname === '/demo' ? 'active' : ''}`}
+                            aria-current={location.pathname === '/demo' ? 'page' : undefined}
+                            data-testid="nav-demo"
+                        >
+                            تجربة
+                        </Link>
                     </motion.div>
                 </div>
             </nav>

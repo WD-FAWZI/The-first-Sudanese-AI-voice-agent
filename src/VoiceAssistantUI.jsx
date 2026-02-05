@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import Vapi from '@vapi-ai/web';
 import { getRemoteMaintenanceStatus } from './maintenance';
@@ -69,6 +69,7 @@ const HiddenDepthBackground = ({ smoothX, smoothY }) => {
 // ═══════════════════════════════════════════════════════════════════════════
 
 function VoiceAssistantUI() {
+    const location = useLocation();
     const mouseX = useMotionValue(0);
     const mouseY = useMotionValue(0);
 
@@ -148,6 +149,8 @@ function VoiceAssistantUI() {
     }, []);
 
     const toggleCall = async () => {
+        if (isConnecting) return;
+
         setIsConnecting(true); // نوضح للمستخدم أننا نتأكد من الحالة
         try {
             const maintenance = await getRemoteMaintenanceStatus();
@@ -243,9 +246,30 @@ function VoiceAssistantUI() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
                     >
-                        <Link to="/" className="nav-link active" data-testid="nav-home">الرئيسية</Link>
-                        <Link to="/about" className="nav-link" data-testid="nav-about">حول</Link>
-                        <Link to="/demo" className="nav-link" data-testid="nav-demo">تجربة</Link>
+                        <Link
+                            to="/"
+                            className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}
+                            aria-current={location.pathname === '/' ? 'page' : undefined}
+                            data-testid="nav-home"
+                        >
+                            الرئيسية
+                        </Link>
+                        <Link
+                            to="/about"
+                            className={`nav-link ${location.pathname === '/about' ? 'active' : ''}`}
+                            aria-current={location.pathname === '/about' ? 'page' : undefined}
+                            data-testid="nav-about"
+                        >
+                            حول
+                        </Link>
+                        <Link
+                            to="/demo"
+                            className={`nav-link ${location.pathname === '/demo' ? 'active' : ''}`}
+                            aria-current={location.pathname === '/demo' ? 'page' : undefined}
+                            data-testid="nav-demo"
+                        >
+                            تجربة
+                        </Link>
                     </motion.div>
                 </div>
             </nav>
@@ -271,13 +295,23 @@ function VoiceAssistantUI() {
                     <motion.div
                         className="voice-blob-wrapper"
                         style={{
-                            outline: 'none',
                             width: '300px',
                             height: '300px',
                             position: 'relative',
-                            pointerEvents: 'none'
+                            cursor: 'pointer'
                         }}
                         data-testid="voice-orb"
+                        onClick={toggleCall}
+                        role="button"
+                        tabIndex={0}
+                        aria-label={isActive ? "إنهاء المحادثة" : (isConnecting ? "جاري الاتصال" : "بدأ المحادثة")}
+                        aria-pressed={isActive || isConnecting}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                toggleCall();
+                            }
+                        }}
                     >
                         <VoiceBlob volume={volume} isActive={isActive || isConnecting} />
                     </motion.div>

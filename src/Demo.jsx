@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 import Vapi from '@vapi-ai/web';
@@ -36,6 +36,7 @@ const PhoneIcon = () => (<svg width="20" height="20" viewBox="0 0 24 24" fill="n
 const PhoneOffIcon = () => (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"> <path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.42 19.42 0 0 1-3.33-2.67m-2.67-3.34a19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"></path> <line x1="23" y1="1" x2="1" y2="23"></line> </svg>);
 
 function DemoPage() {
+    const location = useLocation();
     const mouseX = useMotionValue(0);
     const mouseY = useMotionValue(0);
     const springConfig = { damping: 35, stiffness: 800, restDelta: 0.001 };
@@ -101,9 +102,30 @@ function DemoPage() {
                         <span>الوكيل الصوتي</span>
                     </motion.div>
                     <motion.div className="nav-links" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.1 }}>
-                        <Link to="/" className="nav-link">الرئيسية</Link>
-                        <Link to="/about" className="nav-link">حول</Link>
-                        <Link to="/demo" className="nav-link active">تجربة</Link>
+                        <Link
+                            to="/"
+                            className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}
+                            aria-current={location.pathname === '/' ? 'page' : undefined}
+                            data-testid="nav-home"
+                        >
+                            الرئيسية
+                        </Link>
+                        <Link
+                            to="/about"
+                            className={`nav-link ${location.pathname === '/about' ? 'active' : ''}`}
+                            aria-current={location.pathname === '/about' ? 'page' : undefined}
+                            data-testid="nav-about"
+                        >
+                            حول
+                        </Link>
+                        <Link
+                            to="/demo"
+                            className={`nav-link ${location.pathname === '/demo' ? 'active' : ''}`}
+                            aria-current={location.pathname === '/demo' ? 'page' : undefined}
+                            data-testid="nav-demo"
+                        >
+                            تجربة
+                        </Link>
                     </motion.div>
                 </div>
             </nav>
