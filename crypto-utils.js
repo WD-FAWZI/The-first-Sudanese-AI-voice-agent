@@ -8,6 +8,10 @@ const CryptoUtils = (() => {
     const ALGORITHM = 'AES-GCM';
     const KEY_LENGTH = 256;
 
+    // Cache for derived key
+    let cachedKey = null;
+    let cachedFingerprint = null;
+
     // Generate a unique device-based encryption key
     const getDeviceFingerprint = () => {
         const nav = window.navigator;
@@ -26,6 +30,10 @@ const CryptoUtils = (() => {
 
     // Derive encryption key from fingerprint
     const deriveKey = async (fingerprint) => {
+        if (cachedKey && cachedFingerprint === fingerprint) {
+            return cachedKey;
+        }
+
         const encoder = new TextEncoder();
         const keyMaterial = await crypto.subtle.importKey(
             'raw',
@@ -37,7 +45,7 @@ const CryptoUtils = (() => {
 
         const salt = encoder.encode('ai-agint2-salt-v1');
 
-        return crypto.subtle.deriveKey(
+        const derivedKey = await crypto.subtle.deriveKey(
             {
                 name: 'PBKDF2',
                 salt: salt,
@@ -49,6 +57,11 @@ const CryptoUtils = (() => {
             false,
             ['encrypt', 'decrypt']
         );
+
+        cachedKey = derivedKey;
+        cachedFingerprint = fingerprint;
+
+        return derivedKey;
     };
 
     // Encrypt data
