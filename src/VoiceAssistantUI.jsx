@@ -148,7 +148,26 @@ function VoiceAssistantUI() {
     }, []);
 
     const toggleCall = async () => {
-        setIsConnecting(true); // نوضح للمستخدم أننا نتأكد من الحالة
+        if (isConnecting) return;
+
+        // Early check for Vapi or Config
+        if (!vapi) {
+            setConnectionError("جاري تهيئة الخدمة الصوتية...");
+            return;
+        }
+        if (!config.assistantId) {
+            setConnectionError("لم يتم العثور على معرف المساعد");
+            return;
+        }
+
+        if (isActive) {
+            vapi.stop();
+            return;
+        }
+
+        setIsConnecting(true);
+        setConnectionError(null);
+
         try {
             const maintenance = await getRemoteMaintenanceStatus();
             if (maintenance.active) {
@@ -156,38 +175,37 @@ function VoiceAssistantUI() {
                 setIsConnecting(false);
                 return;
             }
-        } catch (e) {
-            console.error("Maintenance check failed, proceeding with caution.");
-        }
-        setIsConnecting(false);
 
-        if (!vapi) {
-            console.warn("Voice service initializing...");
-            setConnectionError("جاري تهيئة الخدمة الصوتية...");
-            return;
-        }
+            // Explicitly request microphone permission
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            stream.getTracks().forEach(track => track.stop());
 
-        if (!config.assistantId) {
-            console.error("Missing ASSISTANT_ID in configuration");
-            setConnectionError("لم يتم العثور على معرف المساعد");
-            return;
-        }
-
-        if (isActive) {
-            vapi.stop();
-        } else {
-            setIsConnecting(true);
             console.log("Starting call with Assistant ID:", config.assistantId);
-            vapi.start(config.assistantId)
-                .catch((e) => {
-                    console.error("Call start error:", e);
-                    if (e.message?.includes('permission') || e.name === 'NotAllowedError') {
-                        setConnectionError("يرجى السماح بالوصول للميكروفون للمتابعة");
-                    } else {
-                        setConnectionError("حدث خطأ أثناء بدء المكالمة");
-                    }
-                    setIsConnecting(false);
-                });
+
+            const assistantOptions = {
+                transcriber: {
+                    provider: "deepgram",
+                    model: "nova-2",
+                    language: "ar"
+                }
+            };
+
+            await vapi.start(config.assistantId, assistantOptions);
+        } catch (err) {
+            console.error("Call start error:", err);
+            setIsConnecting(false);
+            if (err.name === 'NotAllowedError' || err.message?.includes('permission')) {
+                setConnectionError("يرجى السماح بالوصول للميكروفون للمتابعة");
+            } else {
+                setConnectionError("حدث خطأ أثناء بدء المكالمة");
+            }
+        }
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggleCall();
         }
     };
 
@@ -275,8 +293,15 @@ function VoiceAssistantUI() {
                             width: '300px',
                             height: '300px',
                             position: 'relative',
-                            pointerEvents: 'none'
+                            pointerEvents: 'auto',
+                            cursor: 'pointer'
                         }}
+                        onClick={toggleCall}
+                        onKeyDown={handleKeyDown}
+                        role="button"
+                        tabIndex={0}
+                        aria-label={isActive ? "إنهاء المحادثة" : "بدأ المحادثة"}
+                        aria-pressed={isActive}
                         data-testid="voice-orb"
                     >
                         <VoiceBlob volume={volume} isActive={isActive || isConnecting} />
