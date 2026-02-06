@@ -177,17 +177,25 @@ function VoiceAssistantUI() {
             vapi.stop();
         } else {
             setIsConnecting(true);
-            console.log("Starting call with Assistant ID:", config.assistantId);
-            vapi.start(config.assistantId)
-                .catch((e) => {
-                    console.error("Call start error:", e);
-                    if (e.message?.includes('permission') || e.name === 'NotAllowedError') {
-                        setConnectionError("يرجى السماح بالوصول للميكروفون للمتابعة");
-                    } else {
+
+            // Request microphone permission explicitly first
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                // If successful, stop the tracks immediately as Vapi will handle its own stream
+                stream.getTracks().forEach(track => track.stop());
+
+                console.log("Starting call with Assistant ID:", config.assistantId);
+                vapi.start(config.assistantId)
+                    .catch((e) => {
+                        console.error("Call start error:", e);
+                        setIsConnecting(false);
                         setConnectionError("حدث خطأ أثناء بدء المكالمة");
-                    }
-                    setIsConnecting(false);
-                });
+                    });
+            } catch (err) {
+                console.error("Microphone permission denied:", err);
+                setIsConnecting(false);
+                setConnectionError("يرجى السماح بالوصول للميكروفون للمتابعة");
+            }
         }
     };
 
@@ -270,12 +278,22 @@ function VoiceAssistantUI() {
                 >
                     <motion.div
                         className="voice-blob-wrapper"
+                        onClick={toggleCall}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                toggleCall();
+                            }
+                        }}
                         style={{
                             outline: 'none',
                             width: '300px',
                             height: '300px',
                             position: 'relative',
-                            pointerEvents: 'none'
+                            pointerEvents: 'auto',
+                            cursor: 'pointer'
                         }}
                         data-testid="voice-orb"
                     >
